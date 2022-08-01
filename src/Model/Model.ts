@@ -24,6 +24,19 @@ interface SharkitekMetadataInterface
 }
 
 /**
+ * Class decorator for Sharkitek models.
+ */
+export function Sharkitek(constructor: Function)
+{
+	/*return class extends (constructor as FunctionConstructor) {
+		constructor()
+		{
+			super();
+		}
+	};*/
+}
+
+/**
  * Property decorator to define a Sharkitek model identifier.
  */
 export function Identifier(obj: Model, propertyName: string): void
