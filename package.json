@@ -1,10 +1,11 @@
 {
-  "name": "core",
+  "name": "@sharkitek/core",
   "version": "1.0.0",
   "description": "Sharkitek core models library.",
   "repository": "https://git.madeorsk.com/Sharkitek/core",
   "author": "Madeorsk <madeorsk@protonmail.com>",
   "license": "MIT",
+  "private": false,
   "scripts": {
     "build": "parcel build",
     "dev": "parcel watch",
@@ -13,6 +14,9 @@
   "main": "lib/index.js",
   "source": "src/index.ts",
   "types": "lib/index.d.ts",
+  "files": [
+    "lib/**/*"
+  ],
   "dependencies": {
     "reflect-metadata": "^0.1.13"
   },
