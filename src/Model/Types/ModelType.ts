@@ -20,28 +20,28 @@ export class ModelType<M extends Model> extends Type<any, M>
 		super();
 	}
 
-	serialize(value: M): any
+	serialize(value: M|null): any
 	{
 		// Serializing the given model.
-		return value.serialize();
+		return value ? value.serialize() : null;
 	}
 
-	deserialize(value: any): M
+	deserialize(value: any): M|null
 	{
 		// Deserializing the given object in the new model.
-		return (new this.modelConstructor()).deserialize(value);
+		return value ? (new this.modelConstructor()).deserialize(value) : null;
 	}
 
 	serializeDiff(value: M): any
 	{
 		// Serializing the given model.
-		return value.serializeDiff();
+		return value ? value.serializeDiff() : null;
 	}
 
 	resetDiff(value: M): void
 	{
 		// Reset diff of the given model.
-		value.resetDiff();
+		value?.resetDiff();
 	}
 }
 
