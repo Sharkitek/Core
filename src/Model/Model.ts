@@ -219,7 +219,7 @@ export abstract class Model
 	/**
 	 * Serialize the model.
 	 */
-	serialize(): void
+	serialize(): any
 	{
 		// Creating a serialized object.
 		const serializedObject: any = {};
