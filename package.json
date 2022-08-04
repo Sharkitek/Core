@@ -2,6 +2,7 @@
   "name": "@sharkitek/core",
   "version": "1.0.2",
   "description": "Sharkitek core models library.",
+  "keywords": ["sharkitek", "model", "serialization", "diff", "dirty", "deserialization", "property"],
   "repository": "https://git.madeorsk.com/Sharkitek/core",
   "author": "Madeorsk <madeorsk@protonmail.com>",
   "license": "MIT",
