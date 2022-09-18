@@ -1,6 +1,6 @@
 {
   "name": "@sharkitek/core",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Sharkitek core models library.",
   "keywords": ["sharkitek", "model", "serialization", "diff", "dirty", "deserialization", "property"],
   "repository": "https://git.madeorsk.com/Sharkitek/core",
