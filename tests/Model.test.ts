@@ -1,4 +1,4 @@
-import {SArray, SDecimal, SModel, SNumeric, SString, SDate, Identifier, Model, Property} from "../src";
+import {SArray, SDecimal, SModel, SNumeric, SString, SDate, SBool, Identifier, Model, Property} from "../src";
 
 /**
  * Another test model.
@@ -16,6 +16,9 @@ class Author extends Model
 
 	@Property(SDate)
 	createdAt: Date = undefined;
+
+	@Property(SBool)
+	active: boolean = true;
 
 	constructor(name: string = undefined, firstName: string = undefined, email: string = undefined, createdAt: Date = undefined)
 	{
@@ -55,8 +58,8 @@ it("deserialize", () => {
 		id: 1,
 		title: "this is a test",
 		authors: [
-			{ name: "DOE", firstName: "John", email: "test@test.test", createdAt: "2022-08-07T08:47:01.000Z", },
-			{ name: "TEST", firstName: "Another", email: "another@test.test", createdAt: "2022-09-07T18:32:55.000Z", },
+			{ name: "DOE", firstName: "John", email: "test@test.test", createdAt: "2022-08-07T08:47:01.000Z", active: true, },
+			{ name: "TEST", firstName: "Another", email: "another@test.test", createdAt: "2022-09-07T18:32:55.000Z", active: false, },
 		],
 		text: "this is a long test.",
 		evaluation: "25.23",
@@ -64,8 +67,8 @@ it("deserialize", () => {
 		id: 1,
 		title: "this is a test",
 		authors: [
-			{ name: "DOE", firstName: "John", email: "test@test.test", createdAt: "2022-08-07T08:47:01.000Z", },
-			{ name: "TEST", firstName: "Another", email: "another@test.test", createdAt: "2022-09-07T18:32:55.000Z", },
+			{ name: "DOE", firstName: "John", email: "test@test.test", createdAt: "2022-08-07T08:47:01.000Z", active: true, },
+			{ name: "TEST", firstName: "Another", email: "another@test.test", createdAt: "2022-09-07T18:32:55.000Z", active: false, },
 		],
 		text: "this is a long test.",
 		evaluation: "25.23",
@@ -90,7 +93,7 @@ it("create and check state then serialize", () => {
 		id: 1,
 		title: "this is a test",
 		authors: [
-			{ name: "DOE", firstName: "John", email: "test@test.test", createdAt: now.toISOString() },
+			{ name: "DOE", firstName: "John", email: "test@test.test", createdAt: now.toISOString(), active: true, },
 		],
 		text: "this is a long test.",
 		evaluation: "25.23",
@@ -103,8 +106,8 @@ it("deserialize then save", () => {
 		id: 1,
 		title: "this is a test",
 		authors: [
-			{ name: "DOE", firstName: "John", email: "test@test.test", createdAt: new Date(), },
-			{ name: "TEST", firstName: "Another", email: "another@test.test", createdAt: new Date(), },
+			{ name: "DOE", firstName: "John", email: "test@test.test", createdAt: new Date(), active: true, },
+			{ name: "TEST", firstName: "Another", email: "another@test.test", createdAt: new Date(), active: false, },
 		],
 		text: "this is a long test.",
 		evaluation: "25.23",
@@ -129,8 +132,8 @@ it("save with modified submodels", () => {
 		id: 1,
 		title: "this is a test",
 		authors: [
-			{ name: "DOE", firstName: "John", email: "test@test.test", createdAt: new Date(), },
-			{ name: "TEST", firstName: "Another", email: "another@test.test", createdAt: new Date(), },
+			{ name: "DOE", firstName: "John", email: "test@test.test", createdAt: new Date(), active: true, },
+			{ name: "TEST", firstName: "Another", email: "another@test.test", createdAt: new Date(), active: false, },
 		],
 		text: "this is a long test.",
 		evaluation: "25.23",

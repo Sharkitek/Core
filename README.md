@@ -47,6 +47,9 @@ class Person extends Model
 	
 	@Property(SDate)
 	createdAt: Date = undefined;
+	
+	@Property(SBool)
+	active: boolean = true;
 }
 ```
 
@@ -85,9 +88,11 @@ Types are defined by a class extending `Type`.
 
 Sharkitek defines some basic types by default, in these classes:
 
+- `BoolType`: boolean value in the model, boolean value in the serialized object.
 - `StringType`: string in the model, string in the serialized object.
 - `NumericType`: number in the model, number in the serialized object.
 - `DecimalType`: number in the model, formatted string in the serialized object.
+- `DateType`: date in the model, ISO formatted date in the serialized object.
 - `ArrayType`: array in the model, array in the serialized object.
 - `ModelType`: instance of a specific class in the model, object in the serialized object.
 
@@ -104,6 +109,7 @@ class Example extends Model
 To ease the use of these classes and reduce read complexity, some constant variables and functions are defined in the library,
 following a certain naming convention: "S{type_name}".
 
+- `BoolType` => `SBool`
 - `StringType` => `SString`
 - `NumericType` => `SNumeric`
 - `DecimalType` => `SDecimal`
