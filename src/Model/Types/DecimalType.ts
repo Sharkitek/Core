@@ -17,6 +17,6 @@ export class DecimalType extends Type<string, number>
 }
 
 /**
- * Type of decimal numbers;
+ * Type of decimal numbers.
  */
 export const SDecimal = new DecimalType();

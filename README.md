@@ -44,6 +44,9 @@ class Person extends Model
 
 	@Property(SString)
 	email: string = undefined;
+	
+	@Property(SDate)
+	createdAt: Date = undefined;
 }
 ```
 
@@ -104,6 +107,7 @@ following a certain naming convention: "S{type_name}".
 - `StringType` => `SString`
 - `NumericType` => `SNumeric`
 - `DecimalType` => `SDecimal`
+- `DateType` => `SDate`
 - `ArrayType` => `SArray`
 - `ModelType` => `SModel`
 

@@ -1,4 +1,4 @@
-import {SArray, SDecimal, SModel, SNumeric, SString, Identifier, Model, Property} from "../src";
+import {SArray, SDecimal, SModel, SNumeric, SString, SDate, Identifier, Model, Property} from "../src";
 
 /**
  * Another test model.
@@ -14,13 +14,17 @@ class Author extends Model
 	@Property(SString)
 	email: string = undefined;
 
-	constructor(name: string = undefined, firstName: string = undefined, email: string = undefined)
+	@Property(SDate)
+	createdAt: Date = undefined;
+
+	constructor(name: string = undefined, firstName: string = undefined, email: string = undefined, createdAt: Date = undefined)
 	{
 		super();
 
 		this.name = name;
 		this.firstName = firstName;
 		this.email = email;
+		this.createdAt = createdAt;
 	}
 }
 
@@ -51,8 +55,8 @@ it("deserialize", () => {
 		id: 1,
 		title: "this is a test",
 		authors: [
-			{ name: "DOE", firstName: "John", email: "test@test.test" },
-			{ name: "TEST", firstName: "Another", email: "another@test.test" },
+			{ name: "DOE", firstName: "John", email: "test@test.test", createdAt: "2022-08-07T08:47:01.000Z", },
+			{ name: "TEST", firstName: "Another", email: "another@test.test", createdAt: "2022-09-07T18:32:55.000Z", },
 		],
 		text: "this is a long test.",
 		evaluation: "25.23",
@@ -60,8 +64,8 @@ it("deserialize", () => {
 		id: 1,
 		title: "this is a test",
 		authors: [
-			{ name: "DOE", firstName: "John", email: "test@test.test" },
-			{ name: "TEST", firstName: "Another", email: "another@test.test" },
+			{ name: "DOE", firstName: "John", email: "test@test.test", createdAt: "2022-08-07T08:47:01.000Z", },
+			{ name: "TEST", firstName: "Another", email: "another@test.test", createdAt: "2022-09-07T18:32:55.000Z", },
 		],
 		text: "this is a long test.",
 		evaluation: "25.23",
@@ -69,11 +73,12 @@ it("deserialize", () => {
 });
 
 it("create and check state then serialize", () => {
+	const now = new Date();
 	const article = new Article();
 	article.id = 1;
 	article.title = "this is a test";
 	article.authors = [
-		new Author("DOE", "John", "test@test.test"),
+		new Author("DOE", "John", "test@test.test", now),
 	];
 	article.text = "this is a long test.";
 	article.evaluation = 25.23;
@@ -85,7 +90,7 @@ it("create and check state then serialize", () => {
 		id: 1,
 		title: "this is a test",
 		authors: [
-			{ name: "DOE", firstName: "John", email: "test@test.test" },
+			{ name: "DOE", firstName: "John", email: "test@test.test", createdAt: now.toISOString() },
 		],
 		text: "this is a long test.",
 		evaluation: "25.23",
@@ -98,8 +103,8 @@ it("deserialize then save", () => {
 		id: 1,
 		title: "this is a test",
 		authors: [
-			{ name: "DOE", firstName: "John", email: "test@test.test" },
-			{ name: "TEST", firstName: "Another", email: "another@test.test" },
+			{ name: "DOE", firstName: "John", email: "test@test.test", createdAt: new Date(), },
+			{ name: "TEST", firstName: "Another", email: "another@test.test", createdAt: new Date(), },
 		],
 		text: "this is a long test.",
 		evaluation: "25.23",
@@ -124,8 +129,8 @@ it("save with modified submodels", () => {
 		id: 1,
 		title: "this is a test",
 		authors: [
-			{ name: "DOE", firstName: "John", email: "test@test.test" },
-			{ name: "TEST", firstName: "Another", email: "another@test.test" },
+			{ name: "DOE", firstName: "John", email: "test@test.test", createdAt: new Date(), },
+			{ name: "TEST", firstName: "Another", email: "another@test.test", createdAt: new Date(), },
 		],
 		text: "this is a long test.",
 		evaluation: "25.23",
