@@ -12,5 +12,6 @@ lib/
 .yarnrc*
 yarn-error.log
 .pnp*
+node_modules/
 
 yarn.lock

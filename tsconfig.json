@@ -1,4 +1,10 @@
 {
+  "ts-node": {
+    "compilerOptions": {
+      "module": "CommonJS"
+    }
+  },
+
   "files": ["src/index.ts"],
   "compilerOptions": {
     "outDir": "./lib/",
@@ -11,7 +17,7 @@
     "sourceMap": true,
     "module": "ES6",
     "moduleResolution": "Node",
-    "target": "ES5",
+    "target": "ES6",
 
     "lib": [
       "ESNext",
