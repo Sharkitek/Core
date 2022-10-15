@@ -16,6 +16,9 @@ export class ArrayType<SerializedValueType, SharkitekValueType> extends Type<Ser
 
 	serialize(value: SharkitekValueType[]): SerializedValueType[]
 	{
+		if (value === undefined) return undefined;
+		if (value === null) return null;
+
 		return value.map((value) => (
 			// Serializing each value of the array.
 			this.valueType.serialize(value)
@@ -24,6 +27,9 @@ export class ArrayType<SerializedValueType, SharkitekValueType> extends Type<Ser
 
 	deserialize(value: SerializedValueType[]): SharkitekValueType[]
 	{
+		if (value === undefined) return undefined;
+		if (value === null) return null;
+
 		return value.map((serializedValue) => (
 			// Deserializing each value of the array.
 			this.valueType.deserialize(serializedValue)
