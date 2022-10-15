@@ -38,12 +38,18 @@ export class ArrayType<SerializedValueType, SharkitekValueType> extends Type<Ser
 
 	serializeDiff(value: SharkitekValueType[]): any
 	{
+		if (value === undefined) return undefined;
+		if (value === null) return null;
+
 		// Serializing diff of all elements.
 		return value.map((value) => this.valueType.serializeDiff(value));
 	}
 
 	resetDiff(value: SharkitekValueType[]): void
 	{
+		// Do nothing if it is not an array.
+		if (!Array.isArray(value)) return;
+
 		// Reset diff of all elements.
 		value.forEach((value) => this.valueType.resetDiff(value));
 	}
