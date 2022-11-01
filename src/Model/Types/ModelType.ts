@@ -9,7 +9,7 @@ export type ConstructorOf<T> = { new(): T; }
 /**
  * Type of a Sharkitek model value.
  */
-export class ModelType<M extends Model> extends Type<any, M>
+export class ModelType<M extends Model<M>> extends Type<any, M>
 {
 	/**
 	 * Constructs a new model type of a Sharkitek model property.
@@ -49,7 +49,7 @@ export class ModelType<M extends Model> extends Type<any, M>
  * Type of a Sharkitek model value.
  * @param modelConstructor - Constructor of the model.
  */
-export function SModel<M extends Model>(modelConstructor: ConstructorOf<M>)
+export function SModel<M extends Model<M>>(modelConstructor: ConstructorOf<M>)
 {
 	return new ModelType(modelConstructor);
 }

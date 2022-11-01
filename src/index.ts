@@ -2,6 +2,8 @@
 
 export * from "./Model/Model";
 
+export * from "./Model/Definition";
+
 export * from "./Model/Types/Type";
 export * from "./Model/Types/ArrayType";
 export * from "./Model/Types/BoolType";

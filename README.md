@@ -4,21 +4,22 @@
 
 Sharkitek is a Javascript / TypeScript library designed to ease development of client-side models.
 
-With Sharkitek, you define the architecture of your models by applying decorators (which define their type) on your class properties.
+With Sharkitek, you define the architecture of your models by specifying their properties and their types.
 Then, you can use the defined methods like `serialize`, `deserialize` or `serializeDiff`.
 
-Sharkitek makes use of decorators as defined in the [TypeScript Reference](https://www.typescriptlang.org/docs/handbook/decorators.html).
-Due to the way decorators work, you must always set a value to your properties when you declare them, even if this value is `undefined`.
-
 ```typescript
-class Example extends Model
+class Example extends Model<Example>
 {
-	@Property(SNumeric)
-	@Identifier
-	id: number = undefined;
+	id: number;
+	name: string;
 	
-	@Property(SString)
-	name: string = undefined;
+	protected SDefinition(): ModelDefinition<Example>
+	{
+		return {
+			id: SDefine(SNumeric),
+			name: SDefine(SString),
+		};
+	}
 }
 ```
 
@@ -30,53 +31,60 @@ class Example extends Model
 /**
  * A person.
  */
-class Person extends Model
+class Person extends Model<Person>
 {
-	@Property(SNumeric)
-	@Identifier
-	id: number = undefined;
-	
-	@Property(SString)
-	name: string = undefined;
-
-	@Property(SString)
-	firstName: string = undefined;
-
-	@Property(SString)
-	email: string = undefined;
-	
-	@Property(SDate)
-	createdAt: Date = undefined;
-	
-	@Property(SBool)
+	id: number;
+	name: string;
+	firstName: string;
+	email: string;
+	createdAt: Date;
 	active: boolean = true;
+	
+	protected SIdentifier(): ModelIdentifier<Person>
+	{
+		return "id";
+	}
+	
+	protected SDefinition(): ModelDefinition<Person>
+	{
+		return {
+			name: SDefine(SString),
+			firstName: SDefine(SString),
+			email: SDefine(SString),
+			createdAt: SDefine(SDate),
+			active: SDefine(SBool),
+		};
+	}
 }
 ```
-
-**Important**: You _must_ set a value to all your defined properties. If there is no set value, the decorator will not
-be applied instantly on object initialization and the deserialization will not work properly.
 
 ```typescript
 /**
  * An article.
  */
-class Article extends Model
+class Article extends Model<Article>
 {
-	@Property(SNumeric)
-	@Identifier
-	id: number = undefined;
-
-	@Property(SString)
-	title: string = undefined;
-
-	@Property(SArray(SModel(Author)))
+	id: number;
+	title: string;
 	authors: Author[] = [];
+	text: string;
+	evaluation: number;
 
-	@Property(SString)
-	text: string = undefined;
+	protected SIdentifier(): ModelIdentifier<Article>
+	{
+		return "id";
+	}
 
-	@Property(SDecimal)
-	evaluation: number = undefined;
+	protected SDefinition(): ModelDefinition<Article>
+	{
+		return {
+			id: SDefine(SNumeric),
+			title: SDefine(SString),
+			authors: SDefine(SArray(SModel(Author))),
+			text: SDefine(SString),
+			evaluation: SDefine(SDecimal),
+		};
+	}
 }
 ```
 
@@ -99,10 +107,16 @@ Sharkitek defines some basic types by default, in these classes:
 When you are defining a Sharkitek property, you must provide its type by instantiating one of these classes.
 
 ```typescript
-class Example extends Model
+class Example extends Model<Example>
 {
-	@Property(new StringType())
-	foo: string = undefined;
+	foo: string;
+	
+	protected SDefinition(): ModelDefinition<Example>
+	{
+		return {
+			foo: new Definition(new StringType()),
+		};
+	}
 }
 ```
 
@@ -125,10 +139,16 @@ multiple functions or constants when predefined parameters. (For example, we cou
 be a variable similar to `SArray(SString)`.)
 
 ```typescript
-class Example extends Model
+class Example extends Model<Example>
 {
-	@Property(SString)
 	foo: string = undefined;
+	
+	protected SDefinition(): ModelDefinition<Example>
+	{
+		return {
+			foo: SDefine(SString),
+		};
+	}
 }
 ```
 

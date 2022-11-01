@@ -1,89 +1,50 @@
-import {Type} from "./Types/Type";
-import "reflect-metadata";
-import {ConstructorOf} from "./Types/ModelType";
+import {Definition} from "./Definition";
 
 /**
- * Key of Sharkitek property metadata.
+ * Model properties definition type.
  */
-const sharkitekMetadataKey = Symbol("sharkitek");
-
+export type ModelDefinition<T> = Partial<Record<keyof T, Definition<unknown, unknown>>>;
 /**
- * Key of Sharkitek model identifier.
+ * Model identifier type.
  */
-const modelIdentifierMetadataKey = Symbol("modelIdentifier");
-
-/**
- * Sharkitek property metadata interface.
- */
-interface SharkitekMetadataInterface
-{
-	/**
-	 * Property type instance.
-	 */
-	type: Type<any, any>;
-}
-
-/**
- * Class decorator for Sharkitek models.
- */
-export function Sharkitek(constructor: Function)
-{
-	/*return class extends (constructor as FunctionConstructor) {
-		constructor()
-		{
-			super();
-		}
-	};*/
-}
-
-/**
- * Property decorator to define a Sharkitek model identifier.
- */
-export function Identifier(obj: Model, propertyName: string): void
-{
-	// Register the current property as identifier of the current model object.
-	Reflect.defineMetadata(modelIdentifierMetadataKey, propertyName, obj);
-}
-
-/**
- * Property decorator for Sharkitek models properties.
- * @param type - Type of the property.
- */
-export function Property<SerializedType, SharkitekType>(type: Type<SerializedType, SharkitekType>): PropertyDecorator
-{
-	// Return the decorator function.
-	return (obj: ConstructorOf<Model>, propertyName) => {
-		// Initializing property metadata.
-		const metadata: SharkitekMetadataInterface = {
-			type: type,
-		};
-		// Set property metadata.
-		Reflect.defineMetadata(sharkitekMetadataKey, metadata, obj, propertyName);
-	};
-}
+export type ModelIdentifier<T> = keyof T;
 
 /**
  * A Sharkitek model.
  */
-export abstract class Model
+export abstract class Model<THIS>
 {
 	/**
-	 * Get the Sharkitek model identifier.
-	 * @private
+	 * Model properties definition function.
 	 */
-	private getModelIdentifier(): string
-	{
-		return Reflect.getMetadata(modelIdentifierMetadataKey, this);
-	}
+	protected abstract SDefinition(): ModelDefinition<THIS>;
+
 	/**
-	 * Get the Sharkitek metadata of the property.
-	 * @param propertyName - The name of the property for which to get metadata.
-	 * @private
+	 * Return the name of the model identifier property.
 	 */
-	private getPropertyMetadata(propertyName: string): SharkitekMetadataInterface
+	protected SIdentifier(): ModelIdentifier<THIS>
 	{
-		return Reflect.getMetadata(sharkitekMetadataKey, this, propertyName);
+		return undefined;
 	}
+
+	/**
+	 * Get given property definition.
+	 * @protected
+	 */
+	protected getPropertyDefinition(propertyName: string): Definition<unknown, unknown>
+	{
+		return (this.SDefinition() as any)?.[propertyName];
+	}
+
+	/**
+	 * Get the list of the model properties.
+	 * @protected
+	 */
+	protected getProperties(): string[]
+	{
+		return Object.keys(this.SDefinition());
+	}
+
 	/**
 	 * Calling a function for a defined property.
 	 * @param propertyName - The property for which to check definition.
@@ -91,15 +52,15 @@ export abstract class Model
 	 * @param notProperty - The function called when the property is not defined.
 	 * @protected
 	 */
-	protected propertyWithMetadata(propertyName: string, callback: (propertyMetadata: SharkitekMetadataInterface) => void, notProperty: () => void = () => {}): unknown
+	protected propertyWithDefinition(propertyName: string, callback: (propertyDefinition: Definition<unknown, unknown>) => void, notProperty: () => void = () => {}): unknown
 	{
-		// Getting the current property metadata.
-		const propertyMetadata = this.getPropertyMetadata(propertyName);
-		if (propertyMetadata)
-			// Metadata are defined, calling the right callback.
-			return callback(propertyMetadata);
+		// Getting the current property definition.
+		const propertyDefinition = this.getPropertyDefinition(propertyName);
+		if (propertyDefinition)
+			// There is a definition for the current property, calling the right callback.
+			return callback(propertyDefinition);
 		else
-			// Metadata are not defined, calling the right callback.
+			// No definition for the given property, calling the right callback.
 			return notProperty();
 	}
 	/**
@@ -107,19 +68,16 @@ export abstract class Model
 	 * @param callback - The function to call.
 	 * @protected
 	 */
-	protected forEachModelProperty(callback: (propertyName: string, propertyMetadata: SharkitekMetadataInterface) => unknown): any|void
+	protected forEachModelProperty(callback: (propertyName: string, propertyDefinition: Definition<unknown, unknown>) => unknown): any|void
 	{
-		for (const propertyName of Object.keys(this))
+		for (const propertyName of this.getProperties())
 		{ // For each property, checking that its type is defined and calling the callback with its type.
-			const result = this.propertyWithMetadata(propertyName, (propertyMetadata) => {
-				// If the property is defined, calling the function with the property name and metadata.
-				const result = callback(propertyName, propertyMetadata);
+			const result = this.propertyWithDefinition(propertyName, (propertyDefinition) => {
+				// If the property is defined, calling the function with the property name and definition.
+				const result = callback(propertyName, propertyDefinition);
 
 				// If there is a return value, returning it directly (loop is broken).
 				if (typeof result !== "undefined") return result;
-
-				// Update metadata if they have changed.
-				Reflect.defineMetadata(sharkitekMetadataKey, propertyMetadata, this, propertyName);
 			});
 
 			// If there is a return value, returning it directly (loop is broken).
@@ -153,12 +111,12 @@ export abstract class Model
 	 */
 	isDirty(): boolean
 	{
-		return this.forEachModelProperty((propertyName, propertyMetadata) => (
+		return this.forEachModelProperty((propertyName, propertyDefinition) => (
 			// For each property, checking if it is different.
-			propertyMetadata.type.propertyHasChanged(this._originalProperties[propertyName], (this as any)[propertyName])
+			propertyDefinition.type.propertyHasChanged(this._originalProperties[propertyName], (this as any)[propertyName])
 				// There is a difference, we should return false.
 				? true
-				// There is not difference, returning nothing.
+				// There is no difference, returning nothing.
 				: undefined
 		)) === true;
 	}
@@ -168,7 +126,7 @@ export abstract class Model
 	 */
 	getIdentifier(): unknown
 	{
-		return (this as any)[this.getModelIdentifier()];
+		return (this as any)[this.SIdentifier()];
 	}
 
 	/**
@@ -176,10 +134,10 @@ export abstract class Model
 	 */
 	resetDiff()
 	{
-		this.forEachModelProperty((propertyName, propertyMetadata) => {
+		this.forEachModelProperty((propertyName, propertyDefinition) => {
 			// For each property, set its original value to its current property value.
 			this._originalProperties[propertyName] = (this as any)[propertyName];
-			propertyMetadata.type.resetDiff((this as any)[propertyName]);
+			propertyDefinition.type.resetDiff((this as any)[propertyName]);
 		});
 	}
 	/**
@@ -190,12 +148,12 @@ export abstract class Model
 		// Creating a serialized object.
 		const serializedDiff: any = {};
 
-		this.forEachModelProperty((propertyName, propertyMetadata) => {
+		this.forEachModelProperty((propertyName, propertyDefinition) => {
 			// For each defined model property, adding it to the serialized object if it has changed.
-			if (this.getModelIdentifier() == propertyName
-				|| propertyMetadata.type.propertyHasChanged(this._originalProperties[propertyName], (this as any)[propertyName]))
+			if (this.SIdentifier() == propertyName
+				|| propertyDefinition.type.propertyHasChanged(this._originalProperties[propertyName], (this as any)[propertyName]))
 				// Adding the current property to the serialized object if it is the identifier or its value has changed.
-				serializedDiff[propertyName] = propertyMetadata.type.serializeDiff((this as any)[propertyName]);
+				serializedDiff[propertyName] = propertyDefinition.type.serializeDiff((this as any)[propertyName]);
 		})
 
 		return serializedDiff; // Returning the serialized object.
@@ -224,9 +182,9 @@ export abstract class Model
 		// Creating a serialized object.
 		const serializedObject: any = {};
 
-		this.forEachModelProperty((propertyName, propertyMetadata) => {
+		this.forEachModelProperty((propertyName, propertyDefinition) => {
 			// For each defined model property, adding it to the serialized object.
-			serializedObject[propertyName] = propertyMetadata.type.serialize((this as any)[propertyName]);
+			serializedObject[propertyName] = propertyDefinition.type.serialize((this as any)[propertyName]);
 		});
 
 		return serializedObject; // Returning the serialized object.
@@ -237,16 +195,16 @@ export abstract class Model
 	 * @protected
 	 */
 	protected parse(): void
-	{} // Nothing by default. TODO: create a event system to create functions like "beforeDeserialization" or "afterDeserialization".
+	{} // Nothing by default. TODO: create an event system to create functions like "beforeDeserialization" or "afterDeserialization".
 
 	/**
 	 * Deserialize the model.
 	 */
-	deserialize(serializedObject: any): this
+	deserialize(serializedObject: any): THIS
 	{
-		this.forEachModelProperty((propertyName, propertyMetadata) => {
+		this.forEachModelProperty((propertyName, propertyDefinition) => {
 			// For each defined model property, assigning its deserialized value to the model.
-			(this as any)[propertyName] = propertyMetadata.type.deserialize(serializedObject[propertyName]);
+			(this as any)[propertyName] = propertyDefinition.type.deserialize(serializedObject[propertyName]);
 		});
 
 		// Reset original property values.
@@ -254,6 +212,6 @@ export abstract class Model
 
 		this._originalObject = serializedObject; // The model is not a new one, but loaded from a deserialized one.
 
-		return this; // Returning this, after deserialization.
+		return this as unknown as THIS; // Returning this, after deserialization.
 	}
 }

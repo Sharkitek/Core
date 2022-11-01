@@ -1,24 +1,37 @@
-import {SArray, SDecimal, SModel, SNumeric, SString, SDate, SBool, Identifier, Model, Property} from "../src";
+import {
+	SArray,
+	SDecimal,
+	SModel,
+	SNumeric,
+	SString,
+	SDate,
+	SBool,
+	Model,
+	ModelDefinition,
+	SDefine, ModelIdentifier
+} from "../src";
 
 /**
  * Another test model.
  */
-class Author extends Model
+class Author extends Model<Author>
 {
-	@Property(SString)
-	name: string = undefined;
-
-	@Property(SString)
-	firstName: string = undefined;
-
-	@Property(SString)
-	email: string = undefined;
-
-	@Property(SDate)
-	createdAt: Date = undefined;
-
-	@Property(SBool)
+	name: string;
+	firstName: string;
+	email: string;
+	createdAt: Date;
 	active: boolean = true;
+
+	protected SDefinition(): ModelDefinition<Author>
+	{
+		return {
+			name: SDefine(SString),
+			firstName: SDefine(SString),
+			email: SDefine(SString),
+			createdAt: SDefine(SDate),
+			active: SDefine(SBool),
+		};
+	}
 
 	constructor(name: string = undefined, firstName: string = undefined, email: string = undefined, createdAt: Date = undefined)
 	{
@@ -34,23 +47,29 @@ class Author extends Model
 /**
  * A test model.
  */
-class Article extends Model
+class Article extends Model<Article>
 {
-	@Property(SNumeric)
-	@Identifier
-	id: number = undefined;
-
-	@Property(SString)
-	title: string = undefined;
-
-	@Property(SArray(SModel(Author)))
+	id: number;
+	title: string;
 	authors: Author[] = [];
+	text: string;
+	evaluation: number;
 
-	@Property(SString)
-	text: string = undefined;
+	protected SIdentifier(): ModelIdentifier<Article>
+	{
+		return "id";
+	}
 
-	@Property(SDecimal)
-	evaluation: number = undefined;
+	protected SDefinition(): ModelDefinition<Article>
+	{
+		return {
+			id: SDefine(SNumeric),
+			title: SDefine(SString),
+			authors: SDefine(SArray(SModel(Author))),
+			text: SDefine(SString),
+			evaluation: SDefine(SDecimal),
+		};
+	}
 }
 
 it("deserialize", () => {
