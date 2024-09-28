@@ -14,6 +14,9 @@
 	"repository": "https://git.madeorsk.com/Sharkitek/core",
 	"author": "Madeorsk <madeorsk@protonmail.com>",
 	"license": "MIT",
+	"publishConfig": {
+		"access": "public"
+	},
 	"scripts": {
 		"build": "tsc && vite build",
 		"test": "jest"
