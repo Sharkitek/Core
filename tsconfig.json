@@ -1,25 +1,29 @@
 {
   "ts-node": {
     "compilerOptions": {
-      "module": "CommonJS"
+      "module": "ESNext",
+	    "types": ["node"],
     }
   },
 
-  "files": ["src/index.ts"],
   "compilerOptions": {
     "outDir": "./lib/",
+	  "incremental": true,
+	  "sourceMap": true,
     "noImplicitAny": true,
-    "allowSyntheticDefaultImports": true,
-    "declaration": true,
+	  "esModuleInterop": true,
+	  "allowSyntheticDefaultImports": true,
+	  "resolveJsonModule": true,
+	  "experimentalDecorators": true,
+	  "emitDecoratorMetadata": true,
+	  "declaration": true,
     "declarationMap": true,
-    "sourceMap": true,
     "module": "ES6",
-    "moduleResolution": "Node",
-    "target": "ES6",
-
+	  "target": "ES6",
+    "moduleResolution": "Bundler",
     "lib": [
       "ESNext",
       "DOM"
-    ]
+    ],
   }
 }

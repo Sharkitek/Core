@@ -33,7 +33,7 @@ class Author extends Model<Author>
 		};
 	}
 
-	constructor(name: string = undefined, firstName: string = undefined, email: string = undefined, createdAt: Date = undefined)
+	constructor(name: string = "", firstName: string = "", email: string = "", createdAt: Date = new Date())
 	{
 		super();
 
