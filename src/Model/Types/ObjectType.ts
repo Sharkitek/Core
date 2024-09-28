@@ -24,7 +24,7 @@ export class ObjectType<Keys extends symbol|string> extends Type<Record<Keys, an
 			// For each defined field, deserialize its value according to its type.
 			(Object.entries(this.fieldsTypes) as [Keys, Definition<any, any>][]).map(([fieldName, fieldDefinition]) => (
 				// Return an entry with the current field name and the deserialized value.
-				[fieldName, fieldDefinition.type.deserialize(value[fieldName])]
+				[fieldName, fieldDefinition.type.deserialize(value?.[fieldName])]
 			))
 		) as Record<Keys, any>;
 	}
@@ -38,7 +38,7 @@ export class ObjectType<Keys extends symbol|string> extends Type<Record<Keys, an
 			// For each defined field, serialize its value according to its type.
 			(Object.entries(this.fieldsTypes) as [Keys, Definition<any, any>][]).map(([fieldName, fieldDefinition]) => (
 				// Return an entry with the current field name and the serialized value.
-				[fieldName, fieldDefinition.type.serialize(value[fieldName])]
+				[fieldName, fieldDefinition.type.serialize(value?.[fieldName])]
 			))
 		) as Record<Keys, any>;
 	}
@@ -52,7 +52,7 @@ export class ObjectType<Keys extends symbol|string> extends Type<Record<Keys, an
 			// For each defined field, serialize its diff value according to its type.
 			(Object.entries(this.fieldsTypes) as [Keys, Definition<any, any>][]).map(([fieldName, fieldDefinition]) => (
 				// Return an entry with the current field name and the serialized diff value.
-				[fieldName, fieldDefinition.type.serializeDiff(value[fieldName])]
+				[fieldName, fieldDefinition.type.serializeDiff(value?.[fieldName])]
 			))
 		) as Record<Keys, any>;
 	}
@@ -62,7 +62,7 @@ export class ObjectType<Keys extends symbol|string> extends Type<Record<Keys, an
 		// For each field, reset its diff.
 		(Object.entries(this.fieldsTypes) as [Keys, Definition<any, any>][]).forEach(([fieldName, fieldDefinition]) => {
 			// Reset diff of the current field.
-			fieldDefinition.type.resetDiff(value[fieldName]);
+			fieldDefinition.type.resetDiff(value?.[fieldName]);
 		});
 	}
 }
