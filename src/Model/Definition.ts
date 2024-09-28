@@ -28,7 +28,7 @@ export class Definition<SerializedType, SharkitekType>
  * @param type - The model property type.
  * @param options - Property definition options.
  */
-export function SDefine<SerializedType, SharkitekType>(type: Type<SerializedType, SharkitekType>, options: DefinitionOptions<SerializedType, SharkitekType> = {})
+export function SDefine<SerializedType, SharkitekType>(type: Type<SerializedType, SharkitekType>, options: DefinitionOptions<SerializedType, SharkitekType> = {}): Definition<SerializedType, SharkitekType>
 {
-	return new Definition(type, options);
+	return new Definition<SerializedType, SharkitekType>(type, options);
 }

@@ -6,7 +6,7 @@ import {Type} from "./Type";
 export class ArrayType<SerializedValueType, SharkitekValueType> extends Type<SerializedValueType[], SharkitekValueType[]>
 {
 	/**
-	 * Constructs a new array type of Sharkitek model property.
+	 * Constructs a new array type of a Sharkitek model property.
 	 * @param valueType - Type of the array values.
 	 */
 	constructor(protected valueType: Type<SerializedValueType, SharkitekValueType>)

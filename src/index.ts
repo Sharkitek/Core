@@ -10,4 +10,5 @@ export * from "./Model/Types/DateType";
 export * from "./Model/Types/DecimalType";
 export * from "./Model/Types/ModelType";
 export * from "./Model/Types/NumericType";
+export * from "./Model/Types/ObjectType";
 export * from "./Model/Types/StringType";

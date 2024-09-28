@@ -10,6 +10,7 @@ import {
 	ModelDefinition,
 	SDefine, ModelIdentifier
 } from "../src";
+import {SObject} from "../src/Model/Types/ObjectType";
 
 /**
  * Another test model.
@@ -54,6 +55,9 @@ class Article extends Model<Article>
 	authors: Author[] = [];
 	text: string;
 	evaluation: number;
+	tags: {
+		name: string;
+	}[];
 
 	protected SIdentifier(): ModelIdentifier<Article>
 	{
@@ -68,6 +72,11 @@ class Article extends Model<Article>
 			authors: SDefine(SArray(SModel(Author))),
 			text: SDefine(SString),
 			evaluation: SDefine(SDecimal),
+			tags: SDefine(SArray(
+				SObject({
+					name: SDefine(SString),
+				})
+			)),
 		};
 	}
 }
@@ -82,6 +91,7 @@ it("deserialize", () => {
 		],
 		text: "this is a long test.",
 		evaluation: "25.23",
+		tags: [ {name: "test"}, {name: "foo"} ],
 	}).serialize()).toStrictEqual({
 		id: 1,
 		title: "this is a test",
@@ -91,6 +101,7 @@ it("deserialize", () => {
 		],
 		text: "this is a long test.",
 		evaluation: "25.23",
+		tags: [ {name: "test"}, {name: "foo"} ],
 	});
 });
 
@@ -104,6 +115,9 @@ it("create and check state then serialize", () => {
 	];
 	article.text = "this is a long test.";
 	article.evaluation = 25.23;
+	article.tags = [];
+	article.tags.push({name: "test"});
+	article.tags.push({name: "foo"});
 
 	expect(article.isNew()).toBeTruthy();
 	expect(article.getIdentifier()).toStrictEqual(1);
@@ -116,6 +130,7 @@ it("create and check state then serialize", () => {
 		],
 		text: "this is a long test.",
 		evaluation: "25.23",
+		tags: [ {name: "test"}, {name: "foo"} ],
 	});
 });
 
@@ -130,6 +145,7 @@ it("deserialize then save", () => {
 		],
 		text: "this is a long test.",
 		evaluation: "25.23",
+		tags: [ {name: "test"}, {name: "foo"} ],
 	});
 
 	expect(article.isNew()).toBeFalsy();
@@ -156,6 +172,7 @@ it("save with modified submodels", () => {
 		],
 		text: "this is a long test.",
 		evaluation: "25.23",
+		tags: [ {name: "test"}, {name: "foo"} ],
 	});
 
 	article.authors = article.authors.map((author) => {
