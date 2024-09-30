@@ -12,7 +12,7 @@ export class DecimalType extends Type<string, number>
 
 	serialize(value: number): string
 	{
-		return value.toString();
+		return value?.toString();
 	}
 }
 
