@@ -12,7 +12,7 @@ export class DateType extends Type<string, Date>
 
 	serialize(value: Date): string
 	{
-		return value.toISOString();
+		return value?.toISOString();
 	}
 }
 
