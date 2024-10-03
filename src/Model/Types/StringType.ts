@@ -1,22 +1,26 @@
 import {Type} from "./Type";
+import {define, Definition} from "../PropertyDefinition";
 
 /**
  * Type of any string value.
  */
 export class StringType extends Type<string, string>
 {
-	deserialize(value: string): string
+	deserialize(value: string|null|undefined): string|null|undefined
 	{
 		return value;
 	}
 
-	serialize(value: string): string
+	serialize(value: string|null|undefined): string|null|undefined
 	{
 		return value;
 	}
 }
 
 /**
- * Type of any string value.
+ * New string property definition.
  */
-export const SString = new StringType();
+export function string(): Definition<string, string>
+{
+	return define(new StringType());
+}

@@ -1,22 +1,32 @@
 import {Type} from "./Type";
+import {define, Definition} from "../PropertyDefinition";
 
 /**
  * Type of dates.
  */
 export class DateType extends Type<string, Date>
 {
-	deserialize(value: string): Date
+	deserialize(value: string|null|undefined): Date|null|undefined
 	{
+		if (value === undefined) return undefined;
+		if (value === null) return null;
+
 		return new Date(value);
 	}
 
-	serialize(value: Date): string
+	serialize(value: Date|null|undefined): string|null|undefined
 	{
+		if (value === undefined) return undefined;
+		if (value === null) return null;
+
 		return value?.toISOString();
 	}
 }
 
 /**
- * Type of dates.
+ * New date property definition.
  */
-export const SDate = new DateType();
+export function date(): Definition<string, Date>
+{
+	return define(new DateType());
+}

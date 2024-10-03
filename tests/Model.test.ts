@@ -1,38 +1,17 @@
-import {
-	SArray,
-	SDecimal,
-	SModel,
-	SNumeric,
-	SString,
-	SDate,
-	SBool,
-	Model,
-	ModelDefinition,
-	SDefine, ModelIdentifier
-} from "../src";
-import {SObject} from "../src/Model/Types/ObjectType";
+import {s} from "../src";
 
 /**
  * Another test model.
  */
-class Author extends Model<Author>
+class Author extends s.model({
+	name: s.property.string(),
+	firstName: s.property.string(),
+	email: s.property.string(),
+	createdAt: s.property.date(),
+	active: s.property.bool(),
+})
 {
-	name: string;
-	firstName: string;
-	email: string;
-	createdAt: Date;
 	active: boolean = true;
-
-	protected SDefinition(): ModelDefinition<Author>
-	{
-		return {
-			name: SDefine(SString),
-			firstName: SDefine(SString),
-			email: SDefine(SString),
-			createdAt: SDefine(SDate),
-			active: SDefine(SBool),
-		};
-	}
 
 	constructor(name: string = "", firstName: string = "", email: string = "", createdAt: Date = new Date())
 	{
@@ -48,7 +27,18 @@ class Author extends Model<Author>
 /**
  * A test model.
  */
-class Article extends Model<Article>
+class Article extends s.model({
+	id: s.property.numeric(),
+	title: s.property.string(),
+	authors: s.property.array(s.property.model(Author)),
+	text: s.property.string(),
+	evaluation: s.property.decimal(),
+	tags: s.property.array(
+		s.property.object({
+			name: s.property.string(),
+		})
+	),
+}, "id")
 {
 	id: number;
 	title: string;
@@ -58,27 +48,6 @@ class Article extends Model<Article>
 	tags: {
 		name: string;
 	}[];
-
-	protected SIdentifier(): ModelIdentifier<Article>
-	{
-		return "id";
-	}
-
-	protected SDefinition(): ModelDefinition<Article>
-	{
-		return {
-			id: SDefine(SNumeric),
-			title: SDefine(SString),
-			authors: SDefine(SArray(SModel(Author))),
-			text: SDefine(SString),
-			evaluation: SDefine(SDecimal),
-			tags: SDefine(SArray(
-				SObject({
-					name: SDefine(SString),
-				})
-			)),
-		};
-	}
 }
 
 it("deserialize", () => {
@@ -140,8 +109,8 @@ it("deserialize then save", () => {
 		id: 1,
 		title: "this is a test",
 		authors: [
-			{ name: "DOE", firstName: "John", email: "test@test.test", createdAt: new Date(), active: true, },
-			{ name: "TEST", firstName: "Another", email: "another@test.test", createdAt: new Date(), active: false, },
+			{ name: "DOE", firstName: "John", email: "test@test.test", createdAt: (new Date()).toISOString(), active: true, },
+			{ name: "TEST", firstName: "Another", email: "another@test.test", createdAt: (new Date()).toISOString(), active: false, },
 		],
 		text: "this is a long test.",
 		evaluation: "25.23",
@@ -167,8 +136,8 @@ it("save with modified submodels", () => {
 		id: 1,
 		title: "this is a test",
 		authors: [
-			{ name: "DOE", firstName: "John", email: "test@test.test", createdAt: new Date(), active: true, },
-			{ name: "TEST", firstName: "Another", email: "another@test.test", createdAt: new Date(), active: false, },
+			{ name: "DOE", firstName: "John", email: "test@test.test", createdAt: (new Date()).toISOString(), active: true, },
+			{ name: "TEST", firstName: "Another", email: "another@test.test", createdAt: (new Date()).toISOString(), active: false, },
 		],
 		text: "this is a long test.",
 		evaluation: "25.23",

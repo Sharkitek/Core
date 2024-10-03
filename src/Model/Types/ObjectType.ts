@@ -1,66 +1,67 @@
 import {Type} from "./Type";
-import {Definition} from "../Definition";
+import {define, Definition} from "../PropertyDefinition";
+import {ModelShape, PropertiesModel, SerializedModel, UnknownDefinition} from "../Model";
 
 /**
- * Type of a simple object.
+ * Type of a custom object.
  */
-export class ObjectType<Keys extends symbol|string> extends Type<Record<Keys, any>, Record<Keys, any>>
+export class ObjectType<Shape extends ModelShape> extends Type<SerializedModel<Shape>, PropertiesModel<Shape>>
 {
 	/**
-	 * Constructs a new object type of a Sharkitek model property.
-	 * @param fieldsTypes Object fields types.
+	 * Initialize a new object type of a Sharkitek model property.
+	 * @param shape
 	 */
-	constructor(protected fieldsTypes: Record<Keys, Definition<unknown, unknown>>)
+	constructor(protected readonly shape: Shape)
 	{
 		super();
 	}
 
-	deserialize(value: Record<Keys, any>): Record<Keys, any>
+	deserialize(value: SerializedModel<Shape>|null|undefined): PropertiesModel<Shape>|null|undefined
 	{
 		if (value === undefined) return undefined;
 		if (value === null) return null;
 
 		return Object.fromEntries(
 			// For each defined field, deserialize its value according to its type.
-			(Object.entries(this.fieldsTypes) as [Keys, Definition<any, any>][]).map(([fieldName, fieldDefinition]) => (
+			(Object.entries(this.shape) as [keyof Shape, UnknownDefinition][]).map(([fieldName, fieldDefinition]) => (
 				// Return an entry with the current field name and the deserialized value.
 				[fieldName, fieldDefinition.type.deserialize(value?.[fieldName])]
 			))
-		) as Record<Keys, any>;
+		) as PropertiesModel<Shape>;
 	}
 
-	serialize(value: Record<Keys, any>): Record<Keys, any>
+	serialize(value: PropertiesModel<Shape>|null|undefined): SerializedModel<Shape>|null|undefined
 	{
 		if (value === undefined) return undefined;
 		if (value === null) return null;
 
 		return Object.fromEntries(
 			// For each defined field, serialize its value according to its type.
-			(Object.entries(this.fieldsTypes) as [Keys, Definition<any, any>][]).map(([fieldName, fieldDefinition]) => (
+			(Object.entries(this.shape) as [keyof Shape, UnknownDefinition][]).map(([fieldName, fieldDefinition]) => (
 				// Return an entry with the current field name and the serialized value.
 				[fieldName, fieldDefinition.type.serialize(value?.[fieldName])]
 			))
-		) as Record<Keys, any>;
+		) as PropertiesModel<Shape>;
 	}
 
-	serializeDiff(value: Record<Keys, any>): Record<Keys, any>
+	serializeDiff(value: PropertiesModel<Shape>|null|undefined): Partial<SerializedModel<Shape>>|null|undefined
 	{
 		if (value === undefined) return undefined;
 		if (value === null) return null;
 
 		return Object.fromEntries(
 			// For each defined field, serialize its diff value according to its type.
-			(Object.entries(this.fieldsTypes) as [Keys, Definition<any, any>][]).map(([fieldName, fieldDefinition]) => (
+			(Object.entries(this.shape) as [keyof Shape, UnknownDefinition][]).map(([fieldName, fieldDefinition]) => (
 				// Return an entry with the current field name and the serialized diff value.
 				[fieldName, fieldDefinition.type.serializeDiff(value?.[fieldName])]
 			))
-		) as Record<Keys, any>;
+		) as PropertiesModel<Shape>;
 	}
 
-	resetDiff(value: Record<Keys, any>): void
+	resetDiff(value: PropertiesModel<Shape>|null|undefined)
 	{
 		// For each field, reset its diff.
-		(Object.entries(this.fieldsTypes) as [Keys, Definition<any, any>][]).forEach(([fieldName, fieldDefinition]) => {
+		(Object.entries(this.shape) as [keyof Shape, UnknownDefinition][]).forEach(([fieldName, fieldDefinition]) => {
 			// Reset diff of the current field.
 			fieldDefinition.type.resetDiff(value?.[fieldName]);
 		});
@@ -68,10 +69,10 @@ export class ObjectType<Keys extends symbol|string> extends Type<Record<Keys, an
 }
 
 /**
- * Type of a simple object.
- * @param fieldsTypes Object fields types.
+ * New object property definition.
+ * @param shape Shape of the object.
  */
-export function SObject<Keys extends symbol|string>(fieldsTypes: Record<Keys, Definition<unknown, unknown>>): ObjectType<Keys>
+export function object<Shape extends ModelShape>(shape: Shape): Definition<SerializedModel<Shape>, PropertiesModel<Shape>>
 {
-	return new ObjectType<Keys>(fieldsTypes);
+	return define(new ObjectType(shape));
 }

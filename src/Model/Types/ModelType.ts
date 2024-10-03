@@ -1,44 +1,49 @@
 import {Type} from "./Type";
-import {Model} from "../Model";
-
-/**
- * Type definition of the constructor of a specific type.
- */
-export type ConstructorOf<T> = { new(): T; }
+import {define, Definition} from "../PropertyDefinition";
+import {ConstructorOf, Model, ModelShape, SerializedModel} from "../Model";
 
 /**
  * Type of a Sharkitek model value.
  */
-export class ModelType<M extends Model<M>> extends Type<any, M>
+export class ModelType<Shape extends ModelShape> extends Type<SerializedModel<Shape>, Model<Shape>>
 {
 	/**
-	 * Constructs a new model type of a Sharkitek model property.
-	 * @param modelConstructor - Constructor of the model.
+	 * Initialize a new model type of a Sharkitek model property.
+	 * @param modelConstructor Model constructor.
 	 */
-	constructor(protected modelConstructor: ConstructorOf<M>)
+	constructor(protected modelConstructor: ConstructorOf<Model<Shape>>)
 	{
 		super();
 	}
 
-	serialize(value: M|null): any
+	serialize(value: Model<Shape>|null|undefined): SerializedModel<Shape>|null|undefined
 	{
+		if (value === undefined) return undefined;
+		if (value === null) return null;
+
 		// Serializing the given model.
-		return value ? value.serialize() : null;
+		return value?.serialize();
 	}
 
-	deserialize(value: any): M|null
+	deserialize(value: SerializedModel<Shape>|null|undefined): Model<Shape>|null|undefined
 	{
+		if (value === undefined) return undefined;
+		if (value === null) return null;
+
 		// Deserializing the given object in the new model.
-		return value ? (new this.modelConstructor()).deserialize(value) : null;
+		return (new this.modelConstructor()).deserialize(value) as Model<Shape>;
 	}
 
-	serializeDiff(value: M): any
+	serializeDiff(value: Model<Shape>|null|undefined): Partial<SerializedModel<Shape>>|null|undefined
 	{
+		if (value === undefined) return undefined;
+		if (value === null) return null;
+
 		// Serializing the given model.
-		return value ? value.serializeDiff() : null;
+		return value?.serializeDiff();
 	}
 
-	resetDiff(value: M): void
+	resetDiff(value: Model<Shape>|null|undefined): void
 	{
 		// Reset diff of the given model.
 		value?.resetDiff();
@@ -46,10 +51,10 @@ export class ModelType<M extends Model<M>> extends Type<any, M>
 }
 
 /**
- * Type of a Sharkitek model value.
- * @param modelConstructor - Constructor of the model.
+ * New model property definition.
+ * @param modelConstructor Model constructor.
  */
-export function SModel<M extends Model<M>>(modelConstructor: ConstructorOf<M>)
+export function model<Shape extends ModelShape>(modelConstructor: ConstructorOf<Model<Shape>>): Definition<SerializedModel<Shape>, Model<Shape>>
 {
-	return new ModelType(modelConstructor);
+	return define(new ModelType(modelConstructor));
 }

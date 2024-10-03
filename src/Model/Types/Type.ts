@@ -1,25 +1,25 @@
 /**
  * Abstract class of a Sharkitek model property type.
  */
-export abstract class Type<SerializedType, SharkitekType>
+export abstract class Type<SerializedType, ModelType>
 {
 	/**
 	 * Serialize the given value of a Sharkitek model property.
-	 * @param value - Value to serialize.
+	 * @param value Value to serialize.
 	 */
-	abstract serialize(value: SharkitekType): SerializedType;
+	abstract serialize(value: ModelType|null|undefined): SerializedType|null|undefined;
 
 	/**
 	 * Deserialize the given value of a serialized Sharkitek model.
 	 * @param value - Value to deserialize.
 	 */
-	abstract deserialize(value: SerializedType): SharkitekType;
+	abstract deserialize(value: SerializedType|null|undefined): ModelType|null|undefined;
 
 	/**
 	 * Serialize the given value only if it has changed.
 	 * @param value - Value to deserialize.
 	 */
-	serializeDiff(value: SharkitekType): SerializedType|null
+	serializeDiff(value: ModelType|null|undefined): Partial<SerializedType>|null|undefined
 	{
 		return this.serialize(value); // By default, nothing changes.
 	}
@@ -28,7 +28,7 @@ export abstract class Type<SerializedType, SharkitekType>
 	 * Reset the difference between the original value and the current one.
 	 * @param value - Value for which reset diff data.
 	 */
-	resetDiff(value: SharkitekType): void
+	resetDiff(value: ModelType|null|undefined): void
 	{
 		// By default, nothing to do.
 	}
@@ -38,7 +38,7 @@ export abstract class Type<SerializedType, SharkitekType>
 	 * @param originalValue - Original property value.
 	 * @param currentValue - Current property value.
 	 */
-	propertyHasChanged(originalValue: SharkitekType, currentValue: SharkitekType): boolean
+	propertyHasChanged(originalValue: ModelType|null|undefined, currentValue: ModelType|null|undefined): boolean
 	{
 		return originalValue != currentValue;
 	}
@@ -48,7 +48,7 @@ export abstract class Type<SerializedType, SharkitekType>
 	 * @param originalValue - Original serialized property value.
 	 * @param currentValue - Current serialized property value.
 	 */
-	serializedPropertyHasChanged(originalValue: SerializedType, currentValue: SerializedType): boolean
+	serializedPropertyHasChanged(originalValue: SerializedType|null|undefined, currentValue: SerializedType|null|undefined): boolean
 	{
 		return originalValue != currentValue;
 	}

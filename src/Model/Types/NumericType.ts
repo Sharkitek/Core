@@ -1,22 +1,26 @@
 import {Type} from "./Type";
+import {define, Definition} from "../PropertyDefinition";
 
 /**
  * Type of any numeric value.
  */
 export class NumericType extends Type<number, number>
 {
-	deserialize(value: number): number
+	deserialize(value: number|null|undefined): number|null|undefined
 	{
 		return value;
 	}
 
-	serialize(value: number): number
+	serialize(value: number|null|undefined): number|null|undefined
 	{
 		return value;
 	}
 }
 
 /**
- * Type of any numeric value.
+ * New numeric property definition.
  */
-export const SNumeric = new NumericType();
+export function numeric(): Definition<number, number>
+{
+	return define(new NumericType());
+}
