@@ -47,7 +47,7 @@ export type IdentifierType<Shape extends ModelShape, K extends keyof Shape> = Sh
 /**
  * Interface of a Sharkitek model definition.
  */
-export interface ModelDefinition<Shape extends ModelShape, IdentifierType>
+export interface ModelDefinition<Shape extends ModelShape, IdentifierType, ModelType extends Model<Shape, IdentifierType> = Model<Shape, IdentifierType>>
 {
 	/**
 	 * Get model identifier.
@@ -62,7 +62,7 @@ export interface ModelDefinition<Shape extends ModelShape, IdentifierType>
 	 * Deserialize the model.
 	 * @param obj Serialized object.
 	 */
-	deserialize(obj: SerializedModel<Shape>): Model<Shape, IdentifierType>;
+	deserialize(obj: SerializedModel<Shape>): ModelType;
 
 	/**
 	 * Find out if the model is new (never deserialized) or not.
@@ -93,15 +93,15 @@ export interface ModelDefinition<Shape extends ModelShape, IdentifierType>
  * @param shape Model shape definition.
  * @param identifier Identifier property name.
  */
-export function model<Shape extends ModelShape, Identifier extends keyof Shape = any>(
+export function model<ModelType extends Model<Shape, IdentifierType<Shape, Identifier>>, Shape extends ModelShape, Identifier extends keyof Shape = any>(
 	shape: Shape,
 	identifier?: Identifier,
-): ModelClass<Shape, Identifier>
+): ConstructorOf<ModelType>
 {
 	// Get shape entries.
 	const shapeEntries = Object.entries(shape) as [keyof Shape, UnknownDefinition][];
 
-	return class GenericModel implements ModelDefinition<Shape, IdentifierType<Shape, Identifier>>
+	return class GenericModel implements ModelDefinition<Shape, IdentifierType<Shape, Identifier>, ModelType>
 	{
 		constructor()
 		{
@@ -161,7 +161,7 @@ export function model<Shape extends ModelShape, Identifier extends keyof Shape =
 			return serializedObject as SerializedModel<Shape>; // Returning the serialized object.
 		}
 
-		deserialize(obj: SerializedModel<Shape>): Model<Shape, IdentifierType<Shape, Identifier>>
+		deserialize(obj: SerializedModel<Shape>): ModelType
 		{
 			this.forEachModelProperty((propertyName, propertyDefinition) => {
 				// For each defined model property, assigning its deserialized value.
@@ -173,7 +173,7 @@ export function model<Shape extends ModelShape, Identifier extends keyof Shape =
 
 			this._originalObject = obj; // The model is not a new one, but loaded from a deserialized one. Storing it.
 
-			return this as Model<Shape, IdentifierType<Shape, Identifier>>;
+			return this as unknown as ModelType;
 		}
 
 
@@ -232,5 +232,5 @@ export function model<Shape extends ModelShape, Identifier extends keyof Shape =
 			return diff; // Return the difference.
 		}
 
-	} as unknown as ModelClass<Shape, Identifier>;
+	} as unknown as ConstructorOf<ModelType>;
 }
