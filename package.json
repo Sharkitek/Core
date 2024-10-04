@@ -1,7 +1,7 @@
 {
 	"name": "@sharkitek/core",
 	"version": "3.0.0",
-	"description": "Sharkitek core models library.",
+	"description": "TypeScript library for well-designed model architectures.",
 	"keywords": [
 		"deserialization",
 		"diff",
@@ -14,7 +14,10 @@
 		"typescript"
 	],
 	"repository": "https://code.zeptotech.net/Sharkitek/Core",
-	"author": "Madeorsk <madeorsk@protonmail.com>",
+	"author": {
+		"name": "Madeorsk",
+		"email": "madeorsk@protonmail.com"
+	},
 	"license": "MIT",
 	"publishConfig": {
 		"access": "public"
