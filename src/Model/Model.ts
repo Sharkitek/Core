@@ -35,6 +35,11 @@ export type SerializedModel<Shape extends ModelShape> = {
 export type Model<Shape extends ModelShape, IdentifierType = unknown> = ModelDefinition<Shape, IdentifierType> & PropertiesModel<Shape>;
 
 /**
+ * Type of a model class.
+ */
+export type ModelClass<Shape extends ModelShape, Identifier extends keyof Shape = any> = ConstructorOf<Model<Shape, IdentifierType<Shape, Identifier>>>;
+
+/**
  * Identifier type.
  */
 export type IdentifierType<Shape extends ModelShape, K extends keyof Shape> = Shape[K]["_sharkitek"];
@@ -91,7 +96,7 @@ export interface ModelDefinition<Shape extends ModelShape, IdentifierType>
 export function model<Shape extends ModelShape, Identifier extends keyof Shape = any>(
 	shape: Shape,
 	identifier?: Identifier,
-): ConstructorOf<Model<Shape, IdentifierType<Shape, Identifier>>>
+): ModelClass<Shape, Identifier>
 {
 	// Get shape entries.
 	const shapeEntries = Object.entries(shape) as [keyof Shape, UnknownDefinition][];
@@ -227,5 +232,5 @@ export function model<Shape extends ModelShape, Identifier extends keyof Shape =
 			return diff; // Return the difference.
 		}
 
-	} as unknown as ConstructorOf<Model<Shape, IdentifierType<Shape, Identifier>>>;
+	} as unknown as ModelClass<Shape, Identifier>;
 }

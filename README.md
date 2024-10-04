@@ -19,7 +19,7 @@
 </p>
 
 <p align="center">
-	<img alt="Version 3.0.0" src="https://img.shields.io/badge/version-3.0.0-blue" />
+	<img alt="Version 3.0.1" src="https://img.shields.io/badge/version-3.0.1-blue" />
 </p>
 
 ## Introduction
