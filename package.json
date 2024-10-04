@@ -3,15 +3,17 @@
 	"version": "3.0.0",
 	"description": "Sharkitek core models library.",
 	"keywords": [
-		"sharkitek",
-		"model",
-		"serialization",
+		"deserialization",
 		"diff",
 		"dirty",
-		"deserialization",
-		"property"
+		"model",
+		"object",
+		"property",
+		"serialization",
+		"sharkitek",
+		"typescript"
 	],
-	"repository": "https://git.madeorsk.com/Sharkitek/core",
+	"repository": "https://code.zeptotech.net/Sharkitek/Core",
 	"author": "Madeorsk <madeorsk@protonmail.com>",
 	"license": "MIT",
 	"publishConfig": {
