@@ -1,25 +1,20 @@
 # Sharkitek Core
 
+![Version 3.0.0](https://img.shields.io/badge/version-3.0.0-blue)
+
 ## Introduction
 
 Sharkitek is a Javascript / TypeScript library designed to ease development of client-side models.
 
 With Sharkitek, you define the architecture of your models by specifying their properties and their types.
-Then, you can use the defined methods like `serialize`, `deserialize` or `serializeDiff`.
+Then, you can use the defined methods like `serialize`, `deserialize`, `save` or `serializeDiff`.
 
 ```typescript
-class Example extends Model<Example>
+class Example extends s.model({
+	id: s.property.numeric(),
+	name: s.property.string(),
+})
 {
-	id: number;
-	name: string;
-	
-	protected SDefinition(): ModelDefinition<Example>
-	{
-		return {
-			id: SDefine(SNumeric),
-			name: SDefine(SString),
-		};
-	}
 }
 ```
 
@@ -31,30 +26,16 @@ class Example extends Model<Example>
 /**
  * A person.
  */
-class Person extends Model<Person>
+class Person extends s.model({
+	id: s.property.numeric(),
+	name: s.property.string(),
+	firstName: s.property.string(),
+	email: s.property.string(),
+	createdAt: s.property.date(),
+	active: s.property.boolean(),
+}, "id")
 {
-	id: number;
-	name: string;
-	firstName: string;
-	email: string;
-	createdAt: Date;
 	active: boolean = true;
-	
-	protected SIdentifier(): ModelIdentifier<Person>
-	{
-		return "id";
-	}
-	
-	protected SDefinition(): ModelDefinition<Person>
-	{
-		return {
-			name: SDefine(SString),
-			firstName: SDefine(SString),
-			email: SDefine(SString),
-			createdAt: SDefine(SDate),
-			active: SDefine(SBool),
-		};
-	}
 }
 ```
 
@@ -62,29 +43,27 @@ class Person extends Model<Person>
 /**
  * An article.
  */
-class Article extends Model<Article>
+class Article extends s.model({
+	id: s.property.numeric(),
+	title: s.property.string(),
+	authors: s.property.array(s.property.model(Author)),
+	text: s.property.string(),
+	evaluation: s.property.decimal(),
+	tags: s.property.array(
+		s.property.object({
+			name: s.property.string(),
+		})
+	),
+}, "id")
 {
 	id: number;
 	title: string;
 	authors: Author[] = [];
 	text: string;
 	evaluation: number;
-
-	protected SIdentifier(): ModelIdentifier<Article>
-	{
-		return "id";
-	}
-
-	protected SDefinition(): ModelDefinition<Article>
-	{
-		return {
-			id: SDefine(SNumeric),
-			title: SDefine(SString),
-			authors: SDefine(SArray(SModel(Author))),
-			text: SDefine(SString),
-			evaluation: SDefine(SDecimal),
-		};
-	}
+	tags: {
+		name: string;
+	}[];
 }
 ```
 
@@ -102,53 +81,42 @@ Sharkitek defines some basic types by default, in these classes:
 - `DecimalType`: number in the model, formatted string in the serialized object.
 - `DateType`: date in the model, ISO formatted date in the serialized object.
 - `ArrayType`: array in the model, array in the serialized object.
+- `ObjectType`: object in the model, object in the serialized object.
 - `ModelType`: instance of a specific class in the model, object in the serialized object.
 
-When you are defining a Sharkitek property, you must provide its type by instantiating one of these classes.
+When you are defining a property of a Sharkitek model, you must provide its type by instantiating one of these classes.
 
 ```typescript
-class Example extends Model<Example>
+class Example extends s.model({
+	foo: s.property.define(new StringType()),
+})
 {
 	foo: string;
-	
-	protected SDefinition(): ModelDefinition<Example>
-	{
-		return {
-			foo: new Definition(new StringType()),
-		};
-	}
 }
 ```
 
-To ease the use of these classes and reduce read complexity, some constant variables and functions are defined in the library,
-following a certain naming convention: "S{type_name}".
+To ease the use of these classes and reduce read complexity,
+properties of each type are easily definable with a function for each type.
 
-- `BoolType` => `SBool`
-- `StringType` => `SString`
-- `NumericType` => `SNumeric`
-- `DecimalType` => `SDecimal`
-- `DateType` => `SDate`
-- `ArrayType` => `SArray`
-- `ModelType` => `SModel`
+- `BoolType` => `s.property.boolean`
+- `StringType` => `s.property.string`
+- `NumericType` => `s.property.numeric`
+- `DecimalType` => `s.property.decimal`
+- `DateType` => `s.property.date`
+- `ArrayType` => `s.property.array`
+- `ObjectType` => `s.property.object`
+- `ModelType` => `s.property.model`
 
-When the types require parameters, the constant is defined as a function. If there is no parameter, then a simple
-variable is enough.
-
-Type implementers should provide a corresponding variable or function for each defined type. They can even provide
-multiple functions or constants when predefined parameters. (For example, we could define `SStringArray` which would
-be a variable similar to `SArray(SString)`.)
+Type implementers should provide a corresponding function for each defined type. They can even provide
+multiple functions or constants with predefined parameters.
+(For example, we could define `s.property.stringArray()` which would be similar to `s.property.array(s.property.string())`.)
 
 ```typescript
-class Example extends Model<Example>
+class Example extends s.model({
+	foo: s.property.string(),
+})
 {
-	foo: string = undefined;
-	
-	protected SDefinition(): ModelDefinition<Example>
-	{
-		return {
-			foo: SDefine(SString),
-		};
-	}
+	foo: string;
 }
 ```
 
@@ -208,7 +176,6 @@ const result = model.serializeDiff();
 // result = { id: 5, title: "A new title for a new world" }
 // if `id` is not defined as the model identifier:
 // result = { title: "A new title for a new world" }
-
 ```
 
 #### `resetDiff()`
@@ -238,7 +205,6 @@ const result = model.serializeDiff();
 // result = { id: 5 }
 // if `id` is not defined as the model identifier:
 // result = {}
-
 ```
 
 #### `save()`
@@ -265,5 +231,4 @@ const result = model.save();
 // result = { id: 5, title: "A new title for a new world" }
 // if `id` is not defined as the model identifier:
 // result = { title: "A new title for a new world" }
-
 ```
