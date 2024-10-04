@@ -9,6 +9,11 @@ class Author extends s.model({
 	email: s.property.string(),
 	createdAt: s.property.date(),
 	active: s.property.bool(),
+}).extends({
+	extension(): string
+	{
+		return this.name;
+	}
 })
 {
 	active: boolean = true;
@@ -156,4 +161,10 @@ it("save with modified submodels", () => {
 			{}, //{ name: "TEST", firstName: "Another", email: "another@test.test" },
 		],
 	});
+});
+
+it("test author extension", () => {
+	const author = new Author();
+	author.name = "test name";
+	expect(author.extension()).toStrictEqual("test name");
 });
