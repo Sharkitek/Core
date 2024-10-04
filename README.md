@@ -1,6 +1,26 @@
-# Sharkitek Core
+<p align="center">
+	<a href="https://code.zeptotech.net/Sharkitek/Core">
+		<picture>
+			<img alt="Sharkitek logo" width="200" src="https://code.zeptotech.net/Sharkitek/Core/raw/branch/main/logo.svg" />
+		</picture>
+	</a>
+</p>
+<h1 align="center">
+	Sharkitek
+</h1>
 
-![Version 3.0.0](https://img.shields.io/badge/version-3.0.0-blue)
+<h4 align="center">
+	<a href="https://code.zeptotech.net/Sharkitek/Core">Documentation</a> |
+	<a href="https://code.zeptotech.net/Sharkitek/Core">Website</a>
+</h4>
+
+<p align="center">
+	TypeScript library for well-designed model architectures
+</p>
+
+<p align="center">
+	<img alt="Version 3.0.0" src="https://img.shields.io/badge/version-3.0.0-blue" />
+</p>
 
 ## Introduction
 
