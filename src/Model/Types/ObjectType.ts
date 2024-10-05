@@ -66,6 +66,46 @@ export class ObjectType<Shape extends ModelShape> extends Type<SerializedModel<S
 			fieldDefinition.type.resetDiff(value?.[fieldName]);
 		});
 	}
+
+	propertyHasChanged(originalValue: PropertiesModel<Shape>|null|undefined, currentValue: PropertiesModel<Shape>|null|undefined): boolean
+	{
+		// Get keys arrays.
+		const originalKeys = Object.keys(originalValue) as (keyof Shape)[];
+		const currentKeys = Object.keys(currentValue) as (keyof Shape)[];
+
+		if (originalKeys.join(",") != currentKeys.join(","))
+			// Keys have changed, objects are different.
+			return true;
+
+		for (const key of originalKeys)
+		{ // Check for any change for each value in the object.
+			if (this.shape[key].type.propertyHasChanged(originalValue[key], currentValue[key]))
+				// The value has changed, the object is different.
+				return true;
+		}
+
+		return false; // No change detected.
+	}
+
+	serializedPropertyHasChanged(originalValue: SerializedModel<Shape>|null|undefined, currentValue: SerializedModel<Shape>|null|undefined): boolean
+	{
+		// Get keys arrays.
+		const originalKeys = Object.keys(originalValue) as (keyof Shape)[];
+		const currentKeys = Object.keys(currentValue) as (keyof Shape)[];
+
+		if (originalKeys.join(",") != currentKeys.join(","))
+			// Keys have changed, objects are different.
+			return true;
+
+		for (const key of originalKeys)
+		{ // Check for any change for each value in the object.
+			if (this.shape[key].type.serializedPropertyHasChanged(originalValue[key], currentValue[key]))
+				// The value has changed, the object is different.
+				return true;
+		}
+
+		return false; // No change detected.
+	}
 }
 
 /**

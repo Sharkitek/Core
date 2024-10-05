@@ -243,7 +243,7 @@ export function model<ModelType extends Model<Shape, IdentifierType<Shape, Ident
 			{
 				this.forEachModelProperty((propertyName, propertyDefinition) => {
 					// For each property, set its original value to its current property value.
-					this._originalProperties[propertyName] = (this as PropertiesModel<Shape>)[propertyName];
+					this._originalProperties[propertyName] = structuredClone(this as PropertiesModel<Shape>)[propertyName];
 					propertyDefinition.type.resetDiff((this as PropertiesModel<Shape>)[propertyName]);
 				});
 			}

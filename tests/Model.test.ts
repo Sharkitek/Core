@@ -142,23 +142,21 @@ it("save with modified submodels", () => {
 		title: "this is a test",
 		authors: [
 			{ name: "DOE", firstName: "John", email: "test@test.test", createdAt: (new Date()).toISOString(), active: true, },
-			{ name: "TEST", firstName: "Another", email: "another@test.test", createdAt: (new Date()).toISOString(), active: false, },
+			{ name: "TEST", firstName: "Another", email: "another@test.test", createdAt: (new Date("1997-09-09")).toISOString(), active: false, },
 		],
 		text: "this is a long test.",
 		evaluation: "25.23",
 		tags: [ {name: "test"}, {name: "foo"} ],
 	});
 
-	article.authors = article.authors.map((author) => {
-		author.name = "TEST";
-		return author;
-	});
+	article.authors[0].name = "TEST";
+	article.authors[1].createdAt.setMonth(9);
 
 	expect(article.save()).toStrictEqual({
 		id: 1,
 		authors: [
-			{ name: "TEST", },
-			{}, //{ name: "TEST", firstName: "Another", email: "another@test.test" },
+			{ name: "TEST" },
+			{ createdAt: (new Date("1997-10-09")).toISOString() }, //{ name: "TEST", firstName: "Another", email: "another@test.test" },
 		],
 	});
 });

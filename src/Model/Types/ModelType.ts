@@ -48,6 +48,15 @@ export class ModelType<Shape extends ModelShape> extends Type<SerializedModel<Sh
 		// Reset diff of the given model.
 		value?.resetDiff();
 	}
+
+	propertyHasChanged(originalValue: Model<Shape>|null|undefined, currentValue: Model<Shape>|null|undefined): boolean
+	{
+		if (originalValue === undefined) return currentValue !== undefined;
+		if (originalValue === null) return currentValue !== null;
+
+		// If the current value is dirty, property has changed.
+		return currentValue.isDirty();
+	}
 }
 
 /**

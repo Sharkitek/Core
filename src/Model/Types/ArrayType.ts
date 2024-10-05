@@ -54,6 +54,40 @@ export class ArrayType<SerializedValueType, SharkitekValueType> extends Type<Ser
 		// Reset diff of all elements.
 		value.forEach((value) => this.valueDefinition.type.resetDiff(value));
 	}
+
+	propertyHasChanged(originalValue: SharkitekValueType[]|null|undefined, currentValue: SharkitekValueType[]|null|undefined): boolean
+	{
+		// If any array length is different, arrays are different.
+		if (originalValue?.length != currentValue?.length) return true;
+		// If length is undefined, values are probably not arrays.
+		if (originalValue?.length == undefined) return false;
+
+		for (const key of originalValue.keys())
+		{ // Check for any change for each value in the array.
+			if (this.valueDefinition.type.propertyHasChanged(originalValue[key], currentValue[key]))
+				// The value has changed, the array is different.
+				return true;
+		}
+
+		return false; // No change detected.
+	}
+
+	serializedPropertyHasChanged(originalValue: SerializedValueType[] | null | undefined, currentValue: SerializedValueType[] | null | undefined): boolean
+	{
+		// If any array length is different, arrays are different.
+		if (originalValue?.length != currentValue?.length) return true;
+		// If length is undefined, values are probably not arrays.
+		if (originalValue?.length == undefined) return false;
+
+		for (const key of originalValue.keys())
+		{ // Check for any change for each value in the array.
+			if (this.valueDefinition.type.serializedPropertyHasChanged(originalValue[key], currentValue[key]))
+				// The value has changed, the array is different.
+				return true;
+		}
+
+		return false; // No change detected.
+	}
 }
 
 /**
