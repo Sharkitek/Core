@@ -19,7 +19,7 @@
 </p>
 
 <p align="center">
-	<img alt="Version 3.2.2" src="https://img.shields.io/badge/version-3.2.2-blue" />
+	<img alt="Version 3.3.0" src="https://img.shields.io/badge/version-3.3.0-blue" />
 </p>
 
 ## Introduction
@@ -27,7 +27,7 @@
 Sharkitek is a Javascript / TypeScript library designed to ease development of client-side models.
 
 With Sharkitek, you define the architecture of your models by specifying their properties and their types.
-Then, you can use the defined methods like `serialize`, `deserialize`, `save` or `serializeDiff`.
+Then, you can use the defined methods like `serialize`, `deserialize`, `patch` or `serializeDiff`.
 
 ```typescript
 class Example extends s.model({
@@ -227,7 +227,7 @@ const result = model.serializeDiff();
 // result = {}
 ```
 
-#### `save()`
+#### `patch()`
 
 Get difference between original values and current ones, then reset it.
 Similar to call `serializeDiff()` then `resetDiff()`.
@@ -246,7 +246,7 @@ const model = (new TestModel()).deserialize({
 
 model.title = "A new title for a new world";
 
-const result = model.save();
+const result = model.patch();
 // if `id` is defined as the model identifier:
 // result = { id: 5, title: "A new title for a new world" }
 // if `id` is not defined as the model identifier:

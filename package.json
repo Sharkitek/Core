@@ -1,6 +1,6 @@
 {
 	"name": "@sharkitek/core",
-	"version": "3.2.2",
+	"version": "3.3.0",
 	"description": "TypeScript library for well-designed model architectures.",
 	"keywords": [
 		"deserialization",

@@ -109,7 +109,7 @@ it("create and check state then serialize", () => {
 });
 
 
-it("deserialize then save", () => {
+it("deserialize then patch", () => {
 	const article = (new Article()).deserialize({
 		id: 1,
 		title: "this is a test",
@@ -130,13 +130,13 @@ it("deserialize then save", () => {
 
 	expect(article.isDirty()).toBeTruthy();
 
-	expect(article.save()).toStrictEqual({
+	expect(article.patch()).toStrictEqual({
 		id: 1,
 		text: "Modified text.",
 	});
 });
 
-it("save with modified submodels", () => {
+it("patch with modified submodels", () => {
 	const article = (new Article()).deserialize({
 		id: 1,
 		title: "this is a test",
@@ -152,7 +152,7 @@ it("save with modified submodels", () => {
 	article.authors[0].name = "TEST";
 	article.authors[1].createdAt.setMonth(9);
 
-	expect(article.save()).toStrictEqual({
+	expect(article.patch()).toStrictEqual({
 		id: 1,
 		authors: [
 			{ name: "TEST" },

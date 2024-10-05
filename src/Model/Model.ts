@@ -105,7 +105,7 @@ export interface ModelDefinition<Shape extends ModelShape, IdentifierType, Model
 	 * Get difference between original values and current ones, then reset it.
 	 * Similar to call `serializeDiff()` then `resetDiff()`.
 	 */
-	save(): Partial<SerializedModel<Shape>>;
+	patch(): Partial<SerializedModel<Shape>>;
 }
 
 /**
@@ -248,7 +248,7 @@ export function model<ModelType extends Model<Shape, IdentifierType<Shape, Ident
 				});
 			}
 
-			save(): Partial<SerializedModel<Shape>>
+			patch(): Partial<SerializedModel<Shape>>
 			{
 				// Get the difference.
 				const diff = this.serializeDiff();
