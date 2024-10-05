@@ -21,6 +21,11 @@ export class DateType extends Type<string, Date>
 
 		return value?.toISOString();
 	}
+
+	propertyHasChanged(originalValue: Date|null|undefined, currentValue: Date|null|undefined): boolean
+	{
+		return originalValue?.toISOString() != currentValue?.toISOString();
+	}
 }
 
 /**
