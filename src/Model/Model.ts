@@ -55,6 +55,11 @@ export type ModelClass<ModelType extends Model<Shape, IdentifierType<Shape, Iden
 export type IdentifierType<Shape extends ModelShape, K extends keyof Shape> = Shape[K]["_sharkitek"];
 
 /**
+ * Identifier name type.
+ */
+export type IdentifierNameType<Shape> = Shape extends ModelShape ? keyof Shape : unknown;
+
+/**
  * Interface of a Sharkitek model definition.
  */
 export interface ModelDefinition<Shape extends ModelShape, IdentifierType, ModelType extends Model<Shape, IdentifierType> = Model<Shape, IdentifierType>>
@@ -63,6 +68,11 @@ export interface ModelDefinition<Shape extends ModelShape, IdentifierType, Model
 	 * Get model identifier.
 	 */
 	getIdentifier(): IdentifierType;
+
+	/**
+	 * Get model identifier name.
+	 */
+	getIdentifierName(): IdentifierNameType<Shape>;
 
 	/**
 	 * Serialize the model.
@@ -103,7 +113,7 @@ export interface ModelDefinition<Shape extends ModelShape, IdentifierType, Model
  * @param shape Model shape definition.
  * @param identifier Identifier property name.
  */
-export function model<ModelType extends Model<Shape, IdentifierType<Shape, Identifier>>, Shape extends ModelShape, Identifier extends keyof Shape = any>(
+export function model<ModelType extends Model<Shape, IdentifierType<Shape, Identifier>>, Shape extends ModelShape, Identifier extends IdentifierNameType<Shape> = any>(
 	shape: Shape,
 	identifier?: Identifier,
 ): ModelClass<ModelType, Shape, Identifier>
@@ -158,6 +168,11 @@ export function model<ModelType extends Model<Shape, IdentifierType<Shape, Ident
 			getIdentifier(): IdentifierType<Shape, Identifier>
 			{
 				return (this as PropertiesModel<Shape>)?.[identifier];
+			}
+
+			getIdentifierName(): IdentifierNameType<Shape>
+			{
+				return identifier;
 			}
 
 			serialize(): SerializedModel<Shape>
