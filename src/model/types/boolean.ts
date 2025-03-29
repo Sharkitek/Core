@@ -1,10 +1,10 @@
-import {Type} from "./Type";
-import {define, Definition} from "../PropertyDefinition";
+import {Type} from "./type";
+import {define, Definition} from "../property-definition";
 
 /**
  * Type of any boolean value.
  */
-export class BoolType extends Type<boolean, boolean>
+export class BooleanType extends Type<boolean, boolean>
 {
 	deserialize(value: boolean|null|undefined): boolean|null|undefined
 	{
@@ -28,15 +28,15 @@ export class BoolType extends Type<boolean, boolean>
 /**
  * New boolean property definition.
  */
-export function bool(): Definition<boolean, boolean>
+export function boolean(): Definition<boolean, boolean>
 {
-	return define(new BoolType());
+	return define(new BooleanType());
 }
 /**
  * New boolean property definition.
- * Alias of bool.
+ * Alias of boolean.
  */
-export function boolean(): ReturnType<typeof bool>
+export function bool(): ReturnType<typeof boolean>
 {
-	return bool();
+	return boolean();
 }

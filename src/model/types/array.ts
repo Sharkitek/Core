@@ -1,5 +1,5 @@
-import {Type} from "./Type";
-import {define, Definition} from "../PropertyDefinition";
+import {Type} from "./type";
+import {define, Definition} from "../property-definition";
 
 /**
  * Type of an array of values.
@@ -55,16 +55,16 @@ export class ArrayType<SerializedValueType, SharkitekValueType> extends Type<Ser
 		value.forEach((value) => this.valueDefinition.type.resetDiff(value));
 	}
 
-	propertyHasChanged(originalValue: SharkitekValueType[]|null|undefined, currentValue: SharkitekValueType[]|null|undefined): boolean
+	hasChanged(originalValue: SharkitekValueType[]|null|undefined, currentValue: SharkitekValueType[]|null|undefined): boolean
 	{
 		// If any array length is different, arrays are different.
 		if (originalValue?.length != currentValue?.length) return true;
 		// If length is undefined, values are probably not arrays.
-		if (originalValue?.length == undefined) return false;
+		if (originalValue?.length == undefined) return super.hasChanged(originalValue, currentValue);
 
 		for (const key of originalValue.keys())
 		{ // Check for any change for each value in the array.
-			if (this.valueDefinition.type.propertyHasChanged(originalValue[key], currentValue[key]))
+			if (this.valueDefinition.type.hasChanged(originalValue[key], currentValue[key]))
 				// The value has changed, the array is different.
 				return true;
 		}
@@ -72,21 +72,37 @@ export class ArrayType<SerializedValueType, SharkitekValueType> extends Type<Ser
 		return false; // No change detected.
 	}
 
-	serializedPropertyHasChanged(originalValue: SerializedValueType[] | null | undefined, currentValue: SerializedValueType[] | null | undefined): boolean
+	serializedHasChanged(originalValue: SerializedValueType[] | null | undefined, currentValue: SerializedValueType[] | null | undefined): boolean
 	{
 		// If any array length is different, arrays are different.
 		if (originalValue?.length != currentValue?.length) return true;
 		// If length is undefined, values are probably not arrays.
-		if (originalValue?.length == undefined) return false;
+		if (originalValue?.length == undefined) return super.serializedHasChanged(originalValue, currentValue);
 
 		for (const key of originalValue.keys())
 		{ // Check for any change for each value in the array.
-			if (this.valueDefinition.type.serializedPropertyHasChanged(originalValue[key], currentValue[key]))
+			if (this.valueDefinition.type.serializedHasChanged(originalValue[key], currentValue[key]))
 				// The value has changed, the array is different.
 				return true;
 		}
 
 		return false; // No change detected.
+	}
+
+	clone<T extends SharkitekValueType[]>(array: T|null|undefined): T
+	{
+		// Handle NULL / undefined array.
+		if (!array) return super.clone(array);
+
+		// Initialize an empty array.
+		const cloned = [] as T;
+
+		for (const value of array)
+		{ // Clone each value of the array.
+			cloned.push(this.valueDefinition.type.clone(value));
+		}
+
+		return cloned; // Returning cloned array.
 	}
 }
 

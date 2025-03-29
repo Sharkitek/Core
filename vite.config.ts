@@ -10,12 +10,9 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
 			sourcemap: true,
 			minify: "esbuild",
 			lib: {
-				entry: "src/index.ts",
+				entry: "src/library.ts",
 				formats: ["es"],
 				fileName: "index",
-			},
-			rollupOptions: {
-				external: ["reflect-metadata"],
 			},
 		},
 

@@ -11,13 +11,13 @@ export abstract class Type<SerializedType, ModelType>
 
 	/**
 	 * Deserialize the given value of a serialized Sharkitek model.
-	 * @param value - Value to deserialize.
+	 * @param value Value to deserialize.
 	 */
 	abstract deserialize(value: SerializedType|null|undefined): ModelType|null|undefined;
 
 	/**
 	 * Serialize the given value only if it has changed.
-	 * @param value - Value to deserialize.
+	 * @param value Value to deserialize.
 	 */
 	serializeDiff(value: ModelType|null|undefined): Partial<SerializedType>|null|undefined
 	{
@@ -26,7 +26,7 @@ export abstract class Type<SerializedType, ModelType>
 
 	/**
 	 * Reset the difference between the original value and the current one.
-	 * @param value - Value for which reset diff data.
+	 * @param value Value for which reset diff data.
 	 */
 	resetDiff(value: ModelType|null|undefined): void
 	{
@@ -34,22 +34,31 @@ export abstract class Type<SerializedType, ModelType>
 	}
 
 	/**
-	 * Determine if the property value has changed.
-	 * @param originalValue - Original property value.
-	 * @param currentValue - Current property value.
+	 * Determine if the value has changed.
+	 * @param originalValue Original value.
+	 * @param currentValue Current value.
 	 */
-	propertyHasChanged(originalValue: ModelType|null|undefined, currentValue: ModelType|null|undefined): boolean
+	hasChanged(originalValue: ModelType|null|undefined, currentValue: ModelType|null|undefined): boolean
 	{
-		return originalValue != currentValue;
+		return originalValue !== currentValue;
 	}
 
 	/**
-	 * Determine if the serialized property value has changed.
-	 * @param originalValue - Original serialized property value.
-	 * @param currentValue - Current serialized property value.
+	 * Determine if the serialized value has changed.
+	 * @param originalValue Original serialized value.
+	 * @param currentValue Current serialized value.
 	 */
-	serializedPropertyHasChanged(originalValue: SerializedType|null|undefined, currentValue: SerializedType|null|undefined): boolean
+	serializedHasChanged(originalValue: SerializedType|null|undefined, currentValue: SerializedType|null|undefined): boolean
 	{
-		return originalValue != currentValue;
+		return originalValue !== currentValue;
+	}
+
+	/**
+	 * Clone the provided value.
+	 * @param value The to clone.
+	 */
+	clone<T extends ModelType>(value: T|null|undefined): T
+	{
+		return structuredClone(value);
 	}
 }

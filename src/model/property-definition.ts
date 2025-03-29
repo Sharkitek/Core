@@ -1,4 +1,4 @@
-import {Type} from "./Types/Type";
+import {Type} from "./types/type";
 
 /**
  * Property definition class.
@@ -15,6 +15,16 @@ export class Definition<SerializedType, ModelType>
 	constructor(public readonly type: Type<SerializedType, ModelType>)
 	{}
 }
+
+/**
+ * Unknown property definition.
+ */
+export type UnknownDefinition = Definition<unknown, unknown>;
+
+/**
+ * Any property definition.
+ */
+export type AnyDefinition = Definition<any, any>;
 
 /**
  * New definition of a property of the given type.

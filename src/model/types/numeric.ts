@@ -1,5 +1,5 @@
-import {Type} from "./Type";
-import {define, Definition} from "../PropertyDefinition";
+import {Type} from "./type";
+import {define, Definition} from "../property-definition";
 
 /**
  * Type of any numeric value.
