@@ -36,6 +36,10 @@
 
 Sharkitek is a lightweight Javascript / TypeScript library designed to ease development of models.
 
+```shell
+yarn add @sharkitek/core
+```
+
 With Sharkitek, you define the architecture of your models by specifying their properties and their types.
 Then, you can use the defined methods like `serialize`, `parse`, `patch` or `serializeDiff`.
 
