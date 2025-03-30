@@ -1,0 +1,15 @@
+on: [push]
+
+jobs:
+  test:
+    runs-on: docker
+    container:
+      image: node:latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: corepack enable
+      - uses: actions/setup-node@v4
+        with:
+          cache: "yarn"
+      - run: yarn install
+      - run: yarn coverage
