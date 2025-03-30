@@ -8,12 +8,18 @@ export class StringType extends Type<string, string>
 {
 	deserialize(value: string|null|undefined): string|null|undefined
 	{
-		return value;
+		if (value === undefined) return undefined;
+		if (value === null) return null;
+
+		return String(value);
 	}
 
 	serialize(value: string|null|undefined): string|null|undefined
 	{
-		return value;
+		if (value === undefined) return undefined;
+		if (value === null) return null;
+
+		return String(value);
 	}
 }
 

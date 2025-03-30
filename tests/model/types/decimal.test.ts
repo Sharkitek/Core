@@ -1,5 +1,5 @@
 import {describe, expect, test} from "vitest";
-import {DecimalType, s} from "../../../src/library";
+import {DecimalType, InvalidTypeValueError, s} from "../../../src/library";
 
 describe("decimal type", () => {
 	test("decimal type definition", () => {
@@ -43,5 +43,18 @@ describe("decimal type", () => {
 		s.property.decimal().type.resetDiff(5.257);
 		s.property.decimal().type.resetDiff(undefined);
 		s.property.decimal().type.resetDiff(null);
+	});
+
+	test("invalid parameters types", () => {
+		expect(() => s.property.decimal().type.serialize({} as any)).toThrowError(InvalidTypeValueError);
+		expect(s.property.decimal().type.deserialize({} as any)).toBe(NaN);
+		expect(s.property.decimal().type.deserialize({} as any)).toBe(NaN);
+		expect(() => s.property.decimal().type.serializeDiff({} as any)).toThrowError(InvalidTypeValueError);
+		expect(() => s.property.decimal().type.resetDiff({} as any)).not.toThrow();
+		expect(s.property.decimal().type.hasChanged({} as any, {} as any)).toBeTruthy();
+		expect(s.property.decimal().type.hasChanged(false as any, false as any)).toBeFalsy();
+		expect(s.property.decimal().type.serializedHasChanged({} as any, {} as any)).toBeTruthy();
+		expect(s.property.decimal().type.serializedHasChanged(false as any, false as any)).toBeFalsy();
+		expect(s.property.decimal().type.clone({} as any)).toStrictEqual({});
 	});
 });

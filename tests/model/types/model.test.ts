@@ -1,5 +1,5 @@
 import {describe, expect, test} from "vitest";
-import {ModelType, s} from "../../../src/library";
+import {InvalidTypeValueError, ModelType, s} from "../../../src/library";
 
 class TestModel
 {
@@ -103,5 +103,30 @@ describe("model type", () => {
 		}
 		expect(s.property.model(testModel).type.clone(undefined)).toBe(undefined);
 		expect(s.property.model(testModel).type.clone(null)).toBe(null);
+	});
+
+	test("invalid parameters types", () => {
+		expect(() => s.property.model(testModel).type.serialize(5 as any)).toThrowError(InvalidTypeValueError);
+		expect(() => s.property.model(testModel).type.deserialize(5 as any)).toThrowError(InvalidTypeValueError);
+		expect(() => s.property.model(testModel).type.serializeDiff(5 as any)).toThrowError(InvalidTypeValueError);
+		expect(() => s.property.model(testModel).type.resetDiff(5 as any)).toThrowError(InvalidTypeValueError);
+		expect(() => s.property.model(testModel).type.hasChanged(5 as any, 5 as any)).toThrowError(InvalidTypeValueError);
+		expect(() => s.property.model(testModel).type.serializedHasChanged(5 as any, 5 as any)).toThrowError(InvalidTypeValueError);
+		expect(() => s.property.model(testModel).type.clone(5 as any)).toThrowError(InvalidTypeValueError);
+
+		expect(() => s.property.model(testModel).type.serialize([] as any)).toThrowError(InvalidTypeValueError);
+		expect(() => s.property.model(testModel).type.deserialize([] as any)).toThrowError(InvalidTypeValueError);
+		expect(() => s.property.model(testModel).type.serializeDiff([] as any)).toThrowError(InvalidTypeValueError);
+		expect(() => s.property.model(testModel).type.resetDiff([] as any)).toThrowError(InvalidTypeValueError);
+		expect(() => s.property.model(testModel).type.hasChanged(testModel.model(new TestModel()).instance, [] as any)).toThrowError(InvalidTypeValueError);
+		expect(() => s.property.model(testModel).type.serializedHasChanged({} as any, [] as any)).toThrowError(InvalidTypeValueError);
+		expect(() => s.property.model(testModel).type.clone([] as any)).toThrowError(InvalidTypeValueError);
+
+		expect(() => s.property.model(testModel).type.serialize(new class{} as any)).toThrowError(InvalidTypeValueError);
+		expect(() => s.property.model(testModel).type.serializeDiff(new class{} as any)).toThrowError(InvalidTypeValueError);
+		expect(() => s.property.model(testModel).type.resetDiff(new class{} as any)).toThrowError(InvalidTypeValueError);
+		expect(() => s.property.model(testModel).type.hasChanged(testModel.model(new TestModel()).instance, new class{} as any)).toThrowError(InvalidTypeValueError);
+		expect(s.property.model(testModel).type.serializedHasChanged({} as any, new class{} as any)).toBeFalsy();
+		expect(() => s.property.model(testModel).type.clone(new class{} as any)).toThrowError(InvalidTypeValueError);
 	});
 });

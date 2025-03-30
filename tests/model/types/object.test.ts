@@ -1,5 +1,5 @@
 import {describe, expect, test} from "vitest";
-import {NumericType, ObjectType, s, StringType} from "../../../src/library";
+import {InvalidTypeValueError, NumericType, ObjectType, s, StringType} from "../../../src/library";
 
 describe("object type", () => {
 	test("object type definition", () => {
@@ -78,5 +78,23 @@ describe("object type", () => {
 		}
 		expect(testProperty.type.clone(undefined)).toBe(undefined);
 		expect(testProperty.type.clone(null)).toBe(null);
+	});
+
+	test("invalid parameters types", () => {
+		expect(() => testProperty.type.serialize(5 as any)).toThrowError(InvalidTypeValueError);
+		expect(() => testProperty.type.deserialize(5 as any)).toThrowError(InvalidTypeValueError);
+		expect(() => testProperty.type.serializeDiff(5 as any)).toThrowError(InvalidTypeValueError);
+		expect(() => testProperty.type.resetDiff(5 as any)).toThrowError(InvalidTypeValueError);
+		expect(() => testProperty.type.hasChanged(5 as any, 5 as any)).toThrowError(InvalidTypeValueError);
+		expect(() => testProperty.type.serializedHasChanged(5 as any, 5 as any)).toThrowError(InvalidTypeValueError);
+		expect(() => testProperty.type.clone(5 as any)).toThrowError(InvalidTypeValueError);
+
+		expect(() => testProperty.type.serialize([] as any)).toThrowError(InvalidTypeValueError);
+		expect(() => testProperty.type.deserialize([] as any)).toThrowError(InvalidTypeValueError);
+		expect(() => testProperty.type.serializeDiff([] as any)).toThrowError(InvalidTypeValueError);
+		expect(() => testProperty.type.resetDiff([] as any)).toThrowError(InvalidTypeValueError);
+		expect(() => testProperty.type.hasChanged({} as any, [] as any)).toThrowError(InvalidTypeValueError);
+		expect(() => testProperty.type.serializedHasChanged({} as any, [] as any)).toThrowError(InvalidTypeValueError);
+		expect(() => testProperty.type.clone([] as any)).toThrowError(InvalidTypeValueError);
 	});
 });

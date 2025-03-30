@@ -1,5 +1,6 @@
 import {Type} from "./type";
 import {define, Definition} from "../property-definition";
+import {InvalidTypeValueError} from "../../errors";
 
 /**
  * Type of an array of values.
@@ -20,6 +21,8 @@ export class ArrayType<SerializedValueType, SharkitekValueType> extends Type<Ser
 		if (value === undefined) return undefined;
 		if (value === null) return null;
 
+		if (!Array.isArray(value)) throw new InvalidTypeValueError(this, value, "value must be an array");
+
 		return value.map((value) => (
 			// Serializing each value of the array.
 			this.valueDefinition.type.serialize(value)
@@ -31,6 +34,8 @@ export class ArrayType<SerializedValueType, SharkitekValueType> extends Type<Ser
 		if (value === undefined) return undefined;
 		if (value === null) return null;
 
+		if (!Array.isArray(value)) throw new InvalidTypeValueError(this, value, "value must be an array");
+
 		return value.map((serializedValue) => (
 			// Deserializing each value of the array.
 			this.valueDefinition.type.deserialize(serializedValue)
@@ -41,6 +46,8 @@ export class ArrayType<SerializedValueType, SharkitekValueType> extends Type<Ser
 	{
 		if (value === undefined) return undefined;
 		if (value === null) return null;
+
+		if (!Array.isArray(value)) throw new InvalidTypeValueError(this, value, "value must be an array");
 
 		// Serializing diff of all elements.
 		return value.map((value) => this.valueDefinition.type.serializeDiff(value) as SerializedValueType);
@@ -93,6 +100,8 @@ export class ArrayType<SerializedValueType, SharkitekValueType> extends Type<Ser
 	{
 		// Handle NULL / undefined array.
 		if (!array) return super.clone(array);
+
+		if (!Array.isArray(array)) throw new InvalidTypeValueError(this, array, "value must be an array");
 
 		// Initialize an empty array.
 		const cloned = [] as T;

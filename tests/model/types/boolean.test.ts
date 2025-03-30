@@ -1,5 +1,5 @@
 import {describe, expect, test} from "vitest";
-import {BooleanType, s, StringType} from "../../../src/library";
+import {BooleanType, s} from "../../../src/library";
 
 describe("boolean type", () => {
 	test("boolean type definition", () => {
@@ -49,5 +49,20 @@ describe("boolean type", () => {
 		s.property.boolean().type.resetDiff(false);
 		s.property.boolean().type.resetDiff(undefined);
 		s.property.boolean().type.resetDiff(null);
+	});
+
+	test("invalid parameters types", () => {
+		expect(s.property.boolean().type.serialize(1 as any)).toBeTruthy();
+		expect(s.property.boolean().type.serialize(0 as any)).toBeFalsy();
+		expect(s.property.boolean().type.deserialize(1 as any)).toBeTruthy();
+		expect(s.property.boolean().type.deserialize(0 as any)).toBeFalsy();
+		expect(s.property.boolean().type.serializeDiff(1 as any)).toBeTruthy();
+		expect(s.property.boolean().type.serializeDiff(0 as any)).toBeFalsy();
+		expect(() => s.property.boolean().type.resetDiff({} as any)).not.toThrow();
+		expect(s.property.boolean().type.hasChanged({} as any, {} as any)).toBeTruthy();
+		expect(s.property.boolean().type.hasChanged(false as any, false as any)).toBeFalsy();
+		expect(s.property.boolean().type.serializedHasChanged({} as any, {} as any)).toBeTruthy();
+		expect(s.property.boolean().type.serializedHasChanged(false as any, false as any)).toBeFalsy();
+		expect(s.property.boolean().type.clone({} as any)).toStrictEqual({});
 	});
 });

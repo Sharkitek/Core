@@ -44,4 +44,20 @@ describe("string type", () => {
 		s.property.string().type.resetDiff(undefined);
 		s.property.string().type.resetDiff(null);
 	});
+
+	test("invalid parameters types", () => {
+		const testDate = new Date();
+		expect(s.property.string().type.serialize({} as any)).toBe("[object Object]");
+		expect(s.property.string().type.serialize(2120 as any)).toBe("2120");
+		expect(s.property.string().type.serialize(testDate as any)).toBe(testDate.toString());
+		expect(s.property.string().type.deserialize({} as any)).toBe("[object Object]");
+		expect(s.property.string().type.deserialize(2120 as any)).toBe("2120");
+		expect(s.property.string().type.serializeDiff({} as any)).toBe("[object Object]");
+		expect(s.property.string().type.serializeDiff(2120 as any)).toBe("2120");
+		expect(s.property.string().type.hasChanged({} as any, {} as any)).toBeTruthy();
+		expect(s.property.string().type.hasChanged(false as any, false as any)).toBeFalsy();
+		expect(s.property.string().type.serializedHasChanged({} as any, {} as any)).toBeTruthy();
+		expect(s.property.string().type.serializedHasChanged(false as any, false as any)).toBeFalsy();
+		expect(s.property.string().type.clone({} as any)).toStrictEqual({});
+	});
 });

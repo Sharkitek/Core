@@ -1,5 +1,5 @@
 import * as property from "./properties";
-export { property };
+export {property};
 
 export * from "./model";
 export {Definition} from "./property-definition";

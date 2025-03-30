@@ -1,5 +1,5 @@
 import {describe, expect, test} from "vitest";
-import {DateType, s} from "../../../src/library";
+import {DateType, InvalidTypeValueError, s} from "../../../src/library";
 
 describe("date type", () => {
 	const testDate = new Date();
@@ -58,5 +58,17 @@ describe("date type", () => {
 			expect(clonedPropertyValue).not.toBe(propertyValue);
 			expect(clonedPropertyValue).toEqual(propertyValue);
 		}
+	});
+
+	test("invalid parameters types", () => {
+		expect(() => s.property.date().type.serialize({} as any)).toThrowError(InvalidTypeValueError);
+		expect(s.property.date().type.deserialize({} as any).getTime()).toBe(NaN);
+		expect(() => s.property.date().type.serializeDiff({} as any)).toThrowError(InvalidTypeValueError);
+		expect(() => s.property.date().type.resetDiff({} as any)).not.toThrow();
+		expect(s.property.date().type.hasChanged({} as any, {} as any)).toBeTruthy();
+		expect(s.property.date().type.hasChanged(false as any, false as any)).toBeFalsy();
+		expect(s.property.date().type.serializedHasChanged({} as any, {} as any)).toBeTruthy();
+		expect(s.property.date().type.serializedHasChanged(false as any, false as any)).toBeFalsy();
+		expect(s.property.date().type.clone({} as any)).toStrictEqual({});
 	});
 });

@@ -8,6 +8,7 @@ import {
 	ModelShape,
 	SerializedModel
 } from "../model";
+import {InvalidTypeValueError} from "../../errors";
 
 /**
  * Type of a Sharkitek model value.
@@ -36,6 +37,9 @@ export class ModelType<T extends object, Shape extends ModelShape<T>, Identifier
 		if (value === undefined) return undefined;
 		if (value === null) return null;
 
+		if (!(value instanceof this.definedModel.definition.Class))
+			throw new InvalidTypeValueError(this, value, `value must be a compatible model (given ${value.constructor.name}, expected ${this.definedModel.definition.Class.name})`);
+
 		// Serializing the given model.
 		return this.definedModel.model(value).serialize();
 	}
@@ -44,6 +48,9 @@ export class ModelType<T extends object, Shape extends ModelShape<T>, Identifier
 	{
 		if (value === undefined) return undefined;
 		if (value === null) return null;
+
+		if (typeof value !== "object" || Array.isArray(value))
+			throw new InvalidTypeValueError(this, value, "value must be an object");
 
 		// Parse the given object in the new model.
 		return this.definedModel.parse(value);
@@ -54,12 +61,21 @@ export class ModelType<T extends object, Shape extends ModelShape<T>, Identifier
 		if (value === undefined) return undefined;
 		if (value === null) return null;
 
+		if (!(value instanceof this.definedModel.definition.Class))
+			throw new InvalidTypeValueError(this, value, `value must be a compatible model (given ${value.constructor.name}, expected ${this.definedModel.definition.Class.name})`);
+
 		// Serializing the given model.
 		return this.definedModel.model(value).serializeDiff();
 	}
 
 	resetDiff(value: ModelInstance<T, Shape, Identifier>|null|undefined): void
 	{
+		if (value === undefined) return;
+		if (value === null) return;
+
+		if (!(value instanceof this.definedModel.definition.Class))
+			throw new InvalidTypeValueError(this, value, `value must be a compatible model (given ${value.constructor.name}, expected ${this.definedModel.definition.Class.name})`);
+
 		// Reset diff of the given model.
 		this.definedModel.model(value).resetDiff();
 	}
@@ -71,6 +87,11 @@ export class ModelType<T extends object, Shape extends ModelShape<T>, Identifier
 		if (currentValue === undefined) return true; // Original value is not undefined.
 		if (currentValue === null) return true; // Original value is not null.
 
+		if (!(originalValue instanceof this.definedModel.definition.Class))
+			throw new InvalidTypeValueError(this, originalValue, `value must be a compatible model (given ${originalValue.constructor.name}, expected ${this.definedModel.definition.Class.name})`);
+		if (!(currentValue instanceof this.definedModel.definition.Class))
+			throw new InvalidTypeValueError(this, currentValue, `value must be a compatible model (given ${currentValue.constructor.name}, expected ${this.definedModel.definition.Class.name})`);
+
 		// If the current value is dirty, it has changed.
 		return this.definedModel.model(currentValue).isDirty();
 	}
@@ -81,6 +102,11 @@ export class ModelType<T extends object, Shape extends ModelShape<T>, Identifier
 		if (originalValue === null) return currentValue !== null;
 		if (currentValue === undefined) return true; // Original value is not undefined.
 		if (currentValue === null) return true; // Original value is not null.
+
+		if (typeof originalValue !== "object" || Array.isArray(originalValue))
+			throw new InvalidTypeValueError(this, originalValue, "value must be an object");
+		if (typeof currentValue !== "object" || Array.isArray(currentValue))
+			throw new InvalidTypeValueError(this, currentValue, "value must be an object");
 
 		// If any property has changed, the value has changed.
 		for (const property of this.definedModel.properties)
@@ -94,6 +120,9 @@ export class ModelType<T extends object, Shape extends ModelShape<T>, Identifier
 	{
 		// Handle NULL / undefined values.
 		if (!value) return super.clone(value);
+
+		if (!(value instanceof this.definedModel.definition.Class))
+			throw new InvalidTypeValueError(this, value, `value must be a compatible model (given ${value.constructor.name}, expected ${this.definedModel.definition.Class.name})`);
 
 		return this.definedModel.model(value).clone() as Type;
 	}

@@ -1,5 +1,6 @@
 import {Type} from "./type";
 import {define, Definition} from "../property-definition";
+import {InvalidTypeValueError} from "../../errors";
 
 /**
  * Type of dates.
@@ -18,6 +19,7 @@ export class DateType extends Type<string, Date>
 	{
 		if (value === undefined) return undefined;
 		if (value === null) return null;
+		if (!(value instanceof Date)) throw new InvalidTypeValueError(this, value, "value must be a date");
 		if (isNaN(value?.valueOf())) return value?.toString();
 
 		return value?.toISOString();

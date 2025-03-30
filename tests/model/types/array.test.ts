@@ -1,5 +1,5 @@
 import {describe, expect, test} from "vitest";
-import {ArrayType, s} from "../../../src/library";
+import {ArrayType, InvalidTypeValueError, s} from "../../../src/library";
 
 class TestModel
 {
@@ -121,5 +121,17 @@ describe("array type", () => {
 		}
 		expect(testProperty.type.clone(undefined)).toBe(undefined);
 		expect(testProperty.type.clone(null)).toBe(null);
+	});
+
+	test("invalid parameters types", () => {
+		expect(() => testProperty.type.serialize({} as any)).toThrowError(InvalidTypeValueError);
+		expect(() => testProperty.type.deserialize({} as any)).toThrowError(InvalidTypeValueError);
+		expect(() => testProperty.type.serializeDiff({} as any)).toThrowError(InvalidTypeValueError);
+		expect(() => testProperty.type.resetDiff({} as any)).not.toThrow();
+		expect(testProperty.type.hasChanged({} as any, {} as any)).toBeTruthy();
+		expect(testProperty.type.hasChanged(false as any, false as any)).toBeFalsy();
+		expect(testProperty.type.serializedHasChanged({} as any, {} as any)).toBeTruthy();
+		expect(testProperty.type.serializedHasChanged(false as any, false as any)).toBeFalsy();
+		expect(() => testProperty.type.clone({} as any)).toThrowError(InvalidTypeValueError);
 	});
 });

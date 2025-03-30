@@ -1,5 +1,5 @@
 import {describe, expect, test} from "vitest";
-import {NumericType, s} from "../../../src/library";
+import {InvalidTypeValueError, NumericType, s} from "../../../src/library";
 
 describe("numeric type", () => {
 	test("numeric type definition", () => {
@@ -43,5 +43,17 @@ describe("numeric type", () => {
 		s.property.numeric().type.resetDiff(5.257);
 		s.property.numeric().type.resetDiff(undefined);
 		s.property.numeric().type.resetDiff(null);
+	});
+
+	test("invalid parameters types", () => {
+		expect(() => s.property.numeric().type.serialize({} as any)).toThrowError(InvalidTypeValueError);
+		expect(() => s.property.numeric().type.deserialize({} as any)).toThrowError(InvalidTypeValueError)
+		expect(() => s.property.numeric().type.serializeDiff({} as any)).toThrowError(InvalidTypeValueError);
+		expect(() => s.property.numeric().type.resetDiff({} as any)).not.toThrow();
+		expect(s.property.numeric().type.hasChanged({} as any, {} as any)).toBeTruthy();
+		expect(s.property.numeric().type.hasChanged(false as any, false as any)).toBeFalsy();
+		expect(s.property.numeric().type.serializedHasChanged({} as any, {} as any)).toBeTruthy();
+		expect(s.property.numeric().type.serializedHasChanged(false as any, false as any)).toBeFalsy();
+		expect(s.property.numeric().type.clone({} as any)).toStrictEqual({});
 	});
 });
