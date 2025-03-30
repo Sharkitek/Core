@@ -19,10 +19,17 @@
 </p>
 
 <p align="center">
-	<a href="https://www.npmjs.com/package/@sharkitek/core" target="_blank">
-		<img alt="Latest release" src="https://code.zeptotech.net/Sharkitek/Core/badges/release.svg" />
-	</a>
 	<img alt="Tests status" src="https://code.zeptotech.net/Sharkitek/Core/badges/workflows/test.yaml/badge.svg" />
+	<a href="https://bundlephobia.com/package/@sharkitek/core" target="_blank">
+		<img alt="Bundle size" src="https://badgen.net/bundlephobia/minzip/@sharkitek/core" />
+	</a>
+	<a href="https://www.npmjs.com/package/@sharkitek/core" target="_blank">
+		<img alt="Latest release" src="https://badgen.net/npm/v/@sharkitek/core" />
+	</a>
+	<a href="https://bundlephobia.com/package/@sharkitek/core" target="_blank">
+		<img alt="Bundle size" src="https://badgen.net/bundlephobia/dependency-count/@sharkitek/core" />
+	</a>
+	<img alt="Latest release" src="https://badgen.net/npm/types/@sharkitek/core" />
 </p>
 
 ## Introduction
