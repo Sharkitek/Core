@@ -382,6 +382,22 @@ export class Model<T extends object, Shape extends ModelShape<T>, Identifier ext
 
 		return cloned.instance; // Returning the cloned instance.
 	}
+
+	/**
+	 * Assign the provided fields to existing properties.
+	 * Fields that cannot be matched to existing properties are silently ignored.
+	 * @param fields The fields to assign to the model.
+	 */
+	assign(fields: Partial<ModelPropertiesValues<T, Shape>> & {[field: string]: any}): ModelInstance<T, Shape, Identifier>
+	{
+		for (const field in fields)
+		{ // For each field, if it's a property, assign its value.
+			if ((this.definition.properties as any)?.[field])
+				// Set the instance value.
+				this.instance[field as keyof T] = fields[field];
+		}
+		return this.instance;
+	}
 }
 
 

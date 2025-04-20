@@ -274,6 +274,18 @@ Get a model class (which has all the sharkitek models' functions) from a model i
 const model = definedModel.model(modelInstance);
 ```
 
+#### `assign(object)`
+
+Assign fields from a provided object to the model instance properties. Fields which are not properties of the target model are silently ignored.
+
+```typescript
+const alteredModelInstance = definedModel.model(modelInstance).assign({
+	anyProperty: "foo",
+	anotherOne: true,
+	not_a_property: "will be ignored",
+});
+```
+
 #### `serialize()`
 
 Serialize the model.

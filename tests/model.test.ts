@@ -326,4 +326,34 @@ describe("model", () => {
 		expect(TestModel.model.model(clonedDeserializedModel).serialize()).toStrictEqual({ id: 5, label: "testing" });
 		expect(clonedDeserializedModel.notAProperty.hello).toEqual("world");
 	});
+
+	it("assigns properties, ignoring fields which are not properties", () => {
+		const deserializedArticle = Article.model.parse({
+			id: 1,
+			title: "this is a test",
+			authors: [
+				{ id: 52, name: "John Doe", email: "test@test.test", createdAt: "2022-08-07T08:47:01.000Z", active: true, },
+				{ id: 4, name: "Tester", email: "another@test.test", createdAt: "2022-09-07T18:32:55.000Z", active: false, },
+			],
+			text: "this is a long test.",
+			evaluation: "8.52",
+			tags: [ {name: "test"}, {name: "foo"} ],
+			comments: [
+				{ id: 542, author: { id: 52, name: "John Doe", email: "test@test.test", createdAt: "2022-08-07T08:47:01.000Z", active: true, }, message: "comment content", },
+			],
+		});
+
+		// Assign title and text, html is silently ignored.
+		Article.model.model(deserializedArticle).assign({
+			title: "something else",
+			text: "fully new text! yes!",
+			html: "<p>fully new text! yes!</p>",
+		});
+		expect((deserializedArticle as any)?.html).toBeUndefined();
+		expect(Article.model.model(deserializedArticle).patch()).toStrictEqual({
+			id: 1,
+			title: "something else",
+			text: "fully new text! yes!",
+		});
+	});
 });
