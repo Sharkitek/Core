@@ -356,4 +356,27 @@ describe("model", () => {
 			text: "fully new text! yes!",
 		});
 	});
+
+	it("initializes a model from properties values", () => {
+		const testArticle = Article.model.from({
+			title: "this is a test",
+			authors: [
+				Account.model.from({ name: "John Doe", email: "test@test.test", createdAt: new Date(), active: true }),
+			],
+			text: "this is a long text",
+			evaluation: 8.52,
+			tags: [{ name: "test" }, { name: "foo" }],
+
+			unknownField: true,
+			anotherOne: "test",
+		});
+
+		expect(testArticle.title).toBe("this is a test");
+		expect(testArticle.text).toBe("this is a long text");
+		expect(testArticle.evaluation).toBe(8.52);
+		expect(testArticle.authors).toHaveLength(1);
+		expect(testArticle.authors[0]?.name).toBe("John Doe");
+		expect((testArticle as any).unknownField).toBeUndefined();
+		expect((testArticle as any).anotherOne).toBeUndefined();
+	});
 });

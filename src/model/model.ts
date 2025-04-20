@@ -461,6 +461,16 @@ export class ModelManager<T extends object, Shape extends ModelShape<T>, Identif
 	}
 
 	/**
+	 * Initialize a new model instance with the provided object properties values.
+	 * Fields that cannot be matched to existing properties are silently ignored.
+	 * @param fields
+	 */
+	from(fields: Partial<ModelPropertiesValues<T, Shape>> & {[field: string]: any}): ModelInstance<T, Shape, Identifier>
+	{
+		return this.model().assign(fields);
+	}
+
+	/**
 	 * Parse the serialized model object to a new model instance.
 	 * @param serialized The serialized model object.
 	 */

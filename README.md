@@ -286,6 +286,18 @@ const alteredModelInstance = definedModel.model(modelInstance).assign({
 });
 ```
 
+#### `from(object)`
+
+Initialize a model instance and assign the provided fields to its properties. Fields which are not properties of the target model are silently ignored.
+
+```typescript
+const newModelInstance = definedModel.from({
+	anyProperty: "foo",
+	anotherOne: true,
+	not_a_property: "will be ignored",
+});
+```
+
 #### `serialize()`
 
 Serialize the model.
