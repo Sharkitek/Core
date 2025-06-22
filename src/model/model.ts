@@ -1,5 +1,5 @@
 import {Definition, UnknownDefinition} from "./property-definition";
-import {ConstructorOf} from "../utils";
+import {ConstructorOf, Modify} from "../utils";
 
 /**
  * A model shape.
@@ -522,6 +522,32 @@ export function defineModel<T extends object, Shape extends ModelShape<T>, Ident
 )
 {
 	return new ModelManager<T, Shape, Identifier>(definition);
+}
+
+/**
+ * Define a new model, extending an existing one.
+ * @param extendedModel The extended model manager instance.
+ * @param definition The extension of the model definition object.
+ */
+export function extend<
+	ExtT extends object, ExtShape extends ModelShape<ExtT>, ExtIdentifier extends IdentifierDefinition<ExtT, ExtShape>,
+	T extends ExtT, Shape extends ModelShape<T>, Identifier extends IdentifierDefinition<T, Shape>,
+	ResIdentifier extends IdentifierDefinition<T, ResShape>, ResShape extends ModelShape<T> = Modify<ExtShape, Shape>
+>(
+	extendedModel: ModelManager<ExtT, ExtShape, ExtIdentifier>,
+	definition: ModelDefinition<T, Shape, Identifier>,
+)
+{
+	const { properties: extendedProperties, ...overridableDefinition } = extendedModel.definition;
+	const { properties: propertiesExtension, ...definitionExtension } = definition;
+	return new ModelManager({
+		...overridableDefinition,
+		...definitionExtension,
+		properties: {
+			...extendedProperties,
+			...propertiesExtension,
+		},
+	}) as unknown as ModelManager<T, ResShape, ResIdentifier>;
 }
 
 /**

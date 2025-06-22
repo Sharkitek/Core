@@ -106,6 +106,32 @@ function getTestArticle(): Article
 }
 
 describe("model", () => {
+	it("defines a new model, extending an existing one", () => {
+		class ExtendedAccount extends Account
+		{
+			static extendedModel = s.extend(Account.model, {
+				Class: ExtendedAccount,
+				properties: {
+					extendedProperty: s.property.string(),
+				},
+			});
+
+			extendedProperty: string;
+		}
+
+		expect(ExtendedAccount.extendedModel.definition).toEqual({
+			Class: ExtendedAccount,
+			identifier: "id",
+			properties: {
+				id: s.property.numeric(),
+				createdAt: s.property.date(),
+				name: s.property.string(),
+				email: s.property.string(),
+				active: s.property.boolean(),
+				extendedProperty: s.property.string(),
+			},
+		});
+	});
 	it("initializes a new model", () => {
 		const article = getTestArticle();
 		const newModel = Article.model.model(article);
