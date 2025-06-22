@@ -8,3 +8,5 @@ export {model} from "./types/model";
 export {numeric} from "./types/numeric";
 export {object} from "./types/object";
 export {string} from "./types/string";
+export {map} from "./types/map";
+export {stringMap} from "./types/map";

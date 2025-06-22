@@ -219,6 +219,7 @@ Sharkitek defines some basic types by default, in these classes:
 - `DateType`: date in the model, ISO formatted date in the serialized object.
 - `ArrayType`: array in the model, array in the serialized object.
 - `ObjectType`: object in the model, object in the serialized object.
+- `MapType`: map in the model, record object in the serialized object.
 - `ModelType`: instance of a specific class in the model, object in the serialized object.
 
 When you are defining a property of a Sharkitek model, you must provide its type by instantiating one of these classes.
@@ -246,6 +247,7 @@ To ease the use of these classes and reduce read complexity, properties of each 
 - `DateType` => `s.property.date`
 - `ArrayType` => `s.property.array`
 - `ObjectType` => `s.property.object`
+- `MapType` => `s.property.map` or `s.property.stringMap`
 - `ModelType` => `s.property.model`
 
 Type implementers should provide a corresponding function for each defined type. They can even provide multiple functions or constants with predefined parameters. For example, we could define `s.property.stringArray()` which would be similar to `s.property.array(s.property.string())`.
