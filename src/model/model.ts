@@ -398,6 +398,39 @@ export class Model<T extends object, Shape extends ModelShape<T>, Identifier ext
 		}
 		return this.instance;
 	}
+
+	/**
+	 * Apply a patch to the model instance. All known fields will be deserialized and assigned to the properties.
+	 * @param patch The patch object to apply.
+	 * @param updateOriginals Indicates if the original properties values must be updated or not. By default, they are reset.
+	 */
+	applyPatch(patch: SerializedModel<T, Shape>, updateOriginals: boolean = true): ModelInstance<T, Shape, Identifier>
+	{
+		if (updateOriginals)
+		{ // If serialized original is null and we need to update it, initialize it.
+			this.original.serialized = this.serialize();
+		}
+
+		for (const serializedField in patch)
+		{ // For each field, if it's a property, assign its value.
+			// Get the property definition.
+			const property = this.definition.properties[serializedField as keyof Shape];
+			if (property)
+			{ // Found a matching model property, assigning its deserialized value.
+				(this.instance[serializedField as keyof Shape as keyof T] as any) =
+					(property as UnknownDefinition).type.applyPatch(this.instance[serializedField as keyof Shape as keyof T], patch[serializedField], updateOriginals);
+
+				if (updateOriginals)
+				{ // Update original values.
+					// Set original property value.
+					(this.original.properties[serializedField] as any) = (property as UnknownDefinition).type.clone(this.instance[serializedField as keyof Shape as keyof T]);
+					// Set original serialized value.
+					this.original.serialized[serializedField] = patch[serializedField];
+				}
+			}
+		}
+		return this.instance;
+	}
 }
 
 

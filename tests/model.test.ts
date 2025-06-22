@@ -379,4 +379,45 @@ describe("model", () => {
 		expect((testArticle as any).unknownField).toBeUndefined();
 		expect((testArticle as any).anotherOne).toBeUndefined();
 	});
+
+	it("applies patches to an existing model", () => {
+		const testArticle = Article.model.from({
+			id: 1,
+			title: "this is a test",
+			authors: [
+				Account.model.from({ id: 55, name: "John Doe", email: "test@test.test", createdAt: new Date(), active: true }),
+			],
+			text: "this is a long text",
+			evaluation: 8.52,
+			tags: [{ name: "test" }, { name: "foo" }],
+
+			unknownField: true,
+			anotherOne: "test",
+		});
+		Article.model.model(testArticle).resetDiff();
+
+		// Test simple patch.
+		Article.model.model(testArticle).applyPatch({
+			title: "new title",
+		});
+		expect(testArticle.title).toBe("new title");
+		expect(Article.model.model(testArticle).serializeDiff()).toStrictEqual({ id: 1 });
+
+		// Test originals update propagation.
+		Article.model.model(testArticle).applyPatch({
+			authors: [ { email: "john@test.test" } ]
+		});
+		expect(testArticle.authors[0].email).toBe("john@test.test");
+		expect(Article.model.model(testArticle).serializeDiff()).toStrictEqual({ id: 1 });
+
+		// Test without originals update.
+		Article.model.model(testArticle).applyPatch({
+			authors: [ { name: "Johnny" } ]
+		}, false);
+		expect(testArticle.authors[0].name).toBe("Johnny");
+		expect(Article.model.model(testArticle).serializeDiff()).toStrictEqual({
+			id: 1,
+			authors: [ { id: 55, name: "Johnny" } ]
+		});
+	});
 });

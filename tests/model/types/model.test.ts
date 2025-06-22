@@ -103,6 +103,132 @@ describe("model type", () => {
 		}
 		expect(s.property.model(testModel).type.clone(undefined)).toBe(undefined);
 		expect(s.property.model(testModel).type.clone(null)).toBe(null);
+
+		{ // Apply a patch with undefined / NULL values.
+			expect(s.property.model(testModel).type.applyPatch(
+				testModel.model(Object.assign(new TestModel(), { id: 1, name: "test", price: 12.548777 })).instance,
+				undefined,
+				false
+			)).toBeUndefined();
+			expect(s.property.model(testModel).type.applyPatch(
+				testModel.model(Object.assign(new TestModel(), { id: 1, name: "test", price: 12.548777 })).instance,
+				null,
+				true
+			)).toBeNull();
+		}
+
+		{ // Invalid patch.
+			expect(
+				() => s.property.model(testModel).type.applyPatch(
+					testModel.model(Object.assign(new TestModel(), { id: 1, name: "test", price: 12.548777 })).instance,
+					5416 as any,
+					false
+				)
+			).toThrow(InvalidTypeValueError);
+		}
+
+		{ // Apply a patch with originals update.
+			{
+				const modelInstance = s.property.model(testModel).type.applyPatch(
+					testModel.model(Object.assign(new TestModel(), { id: 1, name: "test", price: 12.548777 })).instance,
+					{ id: 1, name: "another" },
+					true,
+				);
+
+				expect(testModel.model(modelInstance).getInstanceProperties()).toStrictEqual({
+					id: 1,
+					name: "another",
+					price: 12.548777,
+				});
+				expect(testModel.model(modelInstance).serializeDiff()).toStrictEqual({ id: 1 });
+			}
+
+			{
+				const modelInstance = s.property.model(testModel).type.applyPatch(
+					undefined,
+					{ id: 1, name: "test" },
+					true
+				);
+
+				expect(testModel.model(modelInstance).getInstanceProperties()).toStrictEqual({
+					id: 1,
+					name: "test",
+					price: undefined,
+				});
+				expect(testModel.model(modelInstance).serializeDiff()).toStrictEqual({ id: 1 });
+			}
+
+			{
+				const modelInstance = s.property.model(testModel).type.applyPatch(
+					null,
+					{ id: 1, name: "test" },
+					true
+				);
+
+				expect(testModel.model(modelInstance).getInstanceProperties()).toStrictEqual({
+					id: 1,
+					name: "test",
+					price: undefined,
+				});
+				expect(testModel.model(modelInstance).serializeDiff()).toStrictEqual({ id: 1 });
+			}
+		}
+
+		{ // Apply a patch without originals update.
+			{
+				const modelInstance = s.property.model(testModel).type.applyPatch(
+					testModel.model(Object.assign(new TestModel(), { id: 1, name: "test", price: 12.548777 })).instance,
+					{ id: 1, name: "another" },
+					false,
+				);
+
+				expect(testModel.model(modelInstance).getInstanceProperties()).toStrictEqual({
+					id: 1,
+					name: "another",
+					price: 12.548777,
+				});
+				expect(testModel.model(modelInstance).serializeDiff()).toStrictEqual({
+					id: 1,
+					name: "another",
+				});
+			}
+
+			{
+				const modelInstance = s.property.model(testModel).type.applyPatch(
+					undefined,
+					{ id: 1, name: "test" },
+					false
+				);
+
+				expect(testModel.model(modelInstance).getInstanceProperties()).toStrictEqual({
+					id: 1,
+					name: "test",
+					price: undefined,
+				});
+				expect(testModel.model(modelInstance).serializeDiff()).toStrictEqual({
+					id: 1,
+					name: "test",
+				});
+			}
+
+			{
+				const modelInstance = s.property.model(testModel).type.applyPatch(
+					null,
+					{ id: 1, name: "test" },
+					false
+				);
+
+				expect(testModel.model(modelInstance).getInstanceProperties()).toStrictEqual({
+					id: 1,
+					name: "test",
+					price: undefined,
+				});
+				expect(testModel.model(modelInstance).serializeDiff()).toStrictEqual({
+					id: 1,
+					name: "test",
+				});
+			}
+		}
 	});
 
 	test("invalid parameters types", () => {

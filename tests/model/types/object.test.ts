@@ -78,6 +78,64 @@ describe("object type", () => {
 		}
 		expect(testProperty.type.clone(undefined)).toBe(undefined);
 		expect(testProperty.type.clone(null)).toBe(null);
+
+		{ // Apply a patch with undefined / NULL values.
+			expect(testProperty.type.applyPatch(
+				{ test: "test", another: 12.548777 },
+				undefined,
+				false
+			)).toBeUndefined();
+			expect(testProperty.type.applyPatch(
+				{ test: "test", another: 12.548777 },
+				null,
+				true
+			)).toBeNull();
+		}
+
+		{ // Invalid patch.
+			expect(
+				() => testProperty.type.applyPatch({ test: "test", another: 12.548777 }, 5416 as any, false)
+			).toThrow(InvalidTypeValueError);
+		}
+
+		{ // Apply a patch.
+			{
+				const objectInstance = testProperty.type.applyPatch(
+					{ test: "test", another: 12.548777 },
+					{ test: "another" },
+					true,
+				);
+
+				expect(objectInstance).toStrictEqual({
+					test: "another",
+					another: 12.548777,
+				});
+			}
+
+			{
+				const objectInstance = testProperty.type.applyPatch(
+					undefined,
+					{ test: "test" },
+					false
+				);
+
+				expect(objectInstance).toStrictEqual({
+					test: "test",
+				});
+			}
+
+			{
+				const objectInstance = testProperty.type.applyPatch(
+					null,
+					{ test: "test" },
+					false
+				);
+
+				expect(objectInstance).toStrictEqual({
+					test: "test",
+				});
+			}
+		}
 	});
 
 	test("invalid parameters types", () => {

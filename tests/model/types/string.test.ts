@@ -43,6 +43,12 @@ describe("string type", () => {
 		s.property.string().type.resetDiff("test");
 		s.property.string().type.resetDiff(undefined);
 		s.property.string().type.resetDiff(null);
+
+		expect(s.property.string().type.applyPatch("another", "test", false)).toBe("test");
+		expect(s.property.string().type.applyPatch(undefined, "test", true)).toBe("test");
+		expect(s.property.string().type.applyPatch(null, "test", false)).toBe("test");
+		expect(s.property.string().type.applyPatch("test", undefined, false)).toBeUndefined();
+		expect(s.property.string().type.applyPatch("test", null, false)).toBeNull();
 	});
 
 	test("invalid parameters types", () => {

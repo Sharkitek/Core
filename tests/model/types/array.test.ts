@@ -121,6 +121,75 @@ describe("array type", () => {
 		}
 		expect(testProperty.type.clone(undefined)).toBe(undefined);
 		expect(testProperty.type.clone(null)).toBe(null);
+
+		{ // Test simple patch.
+			expect(
+				testProperty.type.applyPatch([12.547, 8, -52.11], ["12.547", "444.34", "-52.11"], true)
+			).toEqual([12.547, 444.34, -52.11]);
+			expect(
+				testProperty.type.applyPatch(undefined, ["12.547", "444.34", "-52.11"], false)
+			).toEqual([12.547, 444.34, -52.11]);
+			expect(
+				testProperty.type.applyPatch(null, ["12.547", "444.34", "-52.11"], false)
+			).toEqual([12.547, 444.34, -52.11]);
+			expect(
+				testProperty.type.applyPatch([12.547, 8, -52.11], undefined, false)
+			).toBeUndefined();
+			expect(
+				testProperty.type.applyPatch([12.547, 8, -52.11], null, false)
+			).toBeNull();
+		}
+		{ // Invalid patch.
+			expect(
+				() => testProperty.type.applyPatch([12.547, 8, -52.11], {} as any, false)
+			).toThrow(InvalidTypeValueError);
+		}
+		{ // Test recursive patch.
+			const propertyValue = [
+				testModel.model(Object.assign(new TestModel(), { id: 1, name: "test", price: 22 })).instance,
+				testModel.model(Object.assign(new TestModel(), { id: 2, name: "another", price: 12.55 })).instance,
+			];
+
+			const patched = s.property.array(s.property.model(testModel)).type.applyPatch(propertyValue, [{
+				id: 1,
+				name: "new",
+			}, {
+				id: 2,
+				price: "13.65",
+			}], true);
+
+			// Check applied patch.
+			expect(patched).toEqual([
+				testModel.parse({ id: 1, name: "new", price: "22" }),
+				testModel.parse({ id: 2, name: "another", price: "13.65" }),
+			]);
+
+			// Check that originals have been updated.
+			expect(testModel.model(patched[0]).serializeDiff()).toEqual({ id: 1 });
+			patched[0].name = "test";
+			expect(testModel.model(patched[0]).serializeDiff()).toEqual({ id: 1, name: "test" });
+			expect(testModel.model(patched[1]).serializeDiff()).toEqual({ id: 2 });
+			patched[1].price = 12.55;
+			expect(testModel.model(patched[1]).serializeDiff()).toEqual({ id: 2, price: "12.55" });
+		}
+		{ // Test recursive patch without originals update.-
+			const propertyValue = [
+				testModel.model(Object.assign(new TestModel(), { id: 1, name: "test", price: 22 })).instance,
+				testModel.model(Object.assign(new TestModel(), { id: 2, name: "another", price: 12.55 })).instance,
+			];
+
+			const patched = s.property.array(s.property.model(testModel)).type.applyPatch(propertyValue, [{
+				id: 1,
+				name: "new",
+			}, {
+				id: 2,
+				price: "13.65",
+			}], false);
+
+			// Check that originals haven't been updated.
+			expect(testModel.model(patched[0]).serializeDiff()).toEqual({ id: 1, name: "new" });
+			expect(testModel.model(patched[1]).serializeDiff()).toEqual({ id: 2, price: "13.65" });
+		}
 	});
 
 	test("invalid parameters types", () => {

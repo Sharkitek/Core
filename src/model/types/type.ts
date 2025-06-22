@@ -61,4 +61,15 @@ export abstract class Type<SerializedType, ModelType>
 	{
 		return structuredClone(value);
 	}
+
+	/**
+	 * Apply the patch value.
+	 * @param currentValue The current property value. Its value can be mutated directly.
+	 * @param patchValue The serialized patch value.
+	 * @param updateOriginals Indicates if the original properties values must be updated or not.
+	 */
+	applyPatch<T extends ModelType>(currentValue: T|null|undefined, patchValue: SerializedType|null|undefined, updateOriginals: boolean): T|null|undefined
+	{
+		return this.deserialize(patchValue) as T;
+	}
 }

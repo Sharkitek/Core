@@ -1,5 +1,5 @@
 import {Type} from "./type";
-import {define, Definition} from "../property-definition";
+import {define, Definition, UnknownDefinition} from "../property-definition";
 import {ModelProperties, ModelPropertiesValues, ModelProperty, ModelShape, SerializedModel} from "../model";
 import {InvalidTypeValueError} from "../../errors";
 
@@ -175,6 +175,26 @@ export class ObjectType<Shape extends ModelShape<T>, T extends object> extends T
 		}
 
 		return cloned as Type; // Returning cloned object.
+	}
+
+	applyPatch<Type extends ModelPropertiesValues<T, Shape>>(currentValue: Type|null|undefined, patchValue: SerializedModel<T, Shape>|null|undefined, updateOriginals: boolean): Type|null|undefined
+	{
+		if (patchValue === undefined) return undefined;
+		if (patchValue === null) return null;
+
+		if (typeof patchValue !== "object" || Array.isArray(patchValue))
+			throw new InvalidTypeValueError(this, patchValue, "value must be an object");
+
+		const patchedValue: Partial<Type> = typeof currentValue === "object" && currentValue !== null ? currentValue : {};
+
+		for (const key in patchValue)
+		{ // Apply the patch to each property of the patch value.
+			const propertyDef = this.shape[key];
+			if (propertyDef)
+				patchedValue[key as keyof Type] = (propertyDef as UnknownDefinition).type.applyPatch(currentValue?.[key as keyof Type], patchValue[key], updateOriginals);
+		}
+
+		return patchedValue as Type;
 	}
 }
 

@@ -126,6 +126,17 @@ export class ModelType<T extends object, Shape extends ModelShape<T>, Identifier
 
 		return this.definedModel.model(value).clone() as Type;
 	}
+
+	applyPatch<Type extends ModelInstance<T, Shape, Identifier>>(currentValue: Type|null|undefined, patchValue: SerializedModel<T, Shape>|null|undefined, updateOriginals: boolean): Type|null|undefined
+	{
+		if (patchValue === undefined) return undefined;
+		if (patchValue === null) return null;
+
+		if (typeof patchValue !== "object" || Array.isArray(patchValue))
+			throw new InvalidTypeValueError(this, patchValue, "value must be an object");
+
+		return this.definedModel.model(currentValue).applyPatch(patchValue, updateOriginals) as Type;
+	}
 }
 
 /**

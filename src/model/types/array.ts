@@ -113,6 +113,28 @@ export class ArrayType<SerializedValueType, SharkitekValueType> extends Type<Ser
 
 		return cloned; // Returning cloned array.
 	}
+
+	applyPatch<T extends SharkitekValueType[]>(currentValue: T|null|undefined, patchValue: SerializedValueType[]|null|undefined, updateOriginals: boolean): T|null|undefined
+	{
+		if (patchValue === undefined) return undefined;
+		if (patchValue === null) return null;
+
+		if (!Array.isArray(patchValue))
+			throw new InvalidTypeValueError(this, patchValue, "value must be an array");
+
+		currentValue = Array.isArray(currentValue) ? currentValue : [] as T;
+
+		for (let i = 0; i < patchValue.length; i++)
+		{ // Apply the patch to all values of the array.
+			const patchedElement = this.valueDefinition.type.applyPatch(currentValue?.[i], patchValue[i], updateOriginals);
+			if (i < currentValue.length)
+				currentValue[i] = patchedElement;
+			else
+				currentValue.push(patchedElement);
+		}
+
+		return currentValue;
+	}
 }
 
 /**

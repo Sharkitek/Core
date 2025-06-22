@@ -43,6 +43,12 @@ describe("numeric type", () => {
 		s.property.numeric().type.resetDiff(5.257);
 		s.property.numeric().type.resetDiff(undefined);
 		s.property.numeric().type.resetDiff(null);
+
+		expect(s.property.numeric().type.applyPatch(1, 5.257, false)).toBe(5.257);
+		expect(s.property.numeric().type.applyPatch(null, 5.257, true)).toBe(5.257);
+		expect(s.property.numeric().type.applyPatch(undefined, 5.257, false)).toBe(5.257);
+		expect(s.property.numeric().type.applyPatch(5.257, undefined, false)).toBeUndefined();
+		expect(s.property.numeric().type.applyPatch(5.257, null, false)).toBeNull();
 	});
 
 	test("invalid parameters types", () => {

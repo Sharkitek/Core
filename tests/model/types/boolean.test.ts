@@ -49,6 +49,15 @@ describe("boolean type", () => {
 		s.property.boolean().type.resetDiff(false);
 		s.property.boolean().type.resetDiff(undefined);
 		s.property.boolean().type.resetDiff(null);
+
+		expect(s.property.boolean().type.applyPatch(false, true, true)).toBeTruthy();
+		expect(s.property.boolean().type.applyPatch(false, true, false)).toBeTruthy();
+		expect(s.property.boolean().type.applyPatch(true, false, false)).toBeFalsy();
+		expect(s.property.boolean().type.applyPatch(false, undefined, false)).toBeUndefined();
+		expect(s.property.boolean().type.applyPatch(false, null, false)).toBeNull();
+		expect(s.property.boolean().type.applyPatch(undefined, null, false)).toBeNull();
+		expect(s.property.boolean().type.applyPatch(null, null, false)).toBeNull();
+		expect(s.property.boolean().type.applyPatch(null, false, false)).toBeFalsy();
 	});
 
 	test("invalid parameters types", () => {

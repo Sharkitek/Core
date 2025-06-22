@@ -58,6 +58,12 @@ describe("date type", () => {
 			expect(clonedPropertyValue).not.toBe(propertyValue);
 			expect(clonedPropertyValue).toEqual(propertyValue);
 		}
+
+		expect(s.property.date().type.applyPatch(new Date("2022-02-22"), testDate.toISOString(), false)?.getTime()).toBe(testDate.getTime());
+		expect(s.property.date().type.applyPatch(null, testDate.toISOString(), true)?.getTime()).toBe(testDate.getTime());
+		expect(s.property.date().type.applyPatch(undefined, "2565152-2156121-256123121 5121544175:21515612", false).valueOf()).toBeNaN();
+		expect(s.property.date().type.applyPatch(new Date(), undefined, false)).toBeUndefined();
+		expect(s.property.date().type.applyPatch(new Date(), null, false)).toBeNull();
 	});
 
 	test("invalid parameters types", () => {

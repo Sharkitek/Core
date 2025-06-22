@@ -43,6 +43,12 @@ describe("decimal type", () => {
 		s.property.decimal().type.resetDiff(5.257);
 		s.property.decimal().type.resetDiff(undefined);
 		s.property.decimal().type.resetDiff(null);
+
+		expect(s.property.decimal().type.applyPatch(1, "5.257", false)).toBe(5.257);
+		expect(s.property.decimal().type.applyPatch(undefined, "5.257", true)).toBe(5.257);
+		expect(s.property.decimal().type.applyPatch(null, "5.257", false)).toBe(5.257);
+		expect(s.property.decimal().type.applyPatch(5.257, undefined, false)).toBeUndefined();
+		expect(s.property.decimal().type.applyPatch(5.257, null, false)).toBeNull();
 	});
 
 	test("invalid parameters types", () => {
