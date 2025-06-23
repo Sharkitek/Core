@@ -22,7 +22,9 @@ describe("decimal type", () => {
 
 		expect(s.property.decimal().type.hasChanged(5.257, 5.257)).toBeFalsy();
 		expect(s.property.decimal().type.hasChanged(null, null)).toBeFalsy();
-		expect(s.property.decimal().type.hasChanged(undefined, undefined)).toBeFalsy();
+		expect(
+			s.property.decimal().type.hasChanged(undefined, undefined),
+		).toBeFalsy();
 		expect(s.property.decimal().type.hasChanged(null, undefined)).toBeTruthy();
 		expect(s.property.decimal().type.hasChanged(undefined, null)).toBeTruthy();
 		expect(s.property.decimal().type.hasChanged(null, 5.257)).toBeTruthy();
@@ -30,37 +32,75 @@ describe("decimal type", () => {
 		expect(s.property.decimal().type.hasChanged(5.257, null)).toBeTruthy();
 		expect(s.property.decimal().type.hasChanged(5.257, undefined)).toBeTruthy();
 
-		expect(s.property.decimal().type.serializedHasChanged("5.257", "5.257")).toBeFalsy();
-		expect(s.property.decimal().type.serializedHasChanged(null, null)).toBeFalsy();
-		expect(s.property.decimal().type.serializedHasChanged(undefined, undefined)).toBeFalsy();
-		expect(s.property.decimal().type.serializedHasChanged(null, undefined)).toBeTruthy();
-		expect(s.property.decimal().type.serializedHasChanged(undefined, null)).toBeTruthy();
-		expect(s.property.decimal().type.serializedHasChanged(null, "5.257")).toBeTruthy();
-		expect(s.property.decimal().type.serializedHasChanged(undefined, "5.257")).toBeTruthy();
-		expect(s.property.decimal().type.serializedHasChanged("5.257", null)).toBeTruthy();
-		expect(s.property.decimal().type.serializedHasChanged("5.257", undefined)).toBeTruthy();
+		expect(
+			s.property.decimal().type.serializedHasChanged("5.257", "5.257"),
+		).toBeFalsy();
+		expect(
+			s.property.decimal().type.serializedHasChanged(null, null),
+		).toBeFalsy();
+		expect(
+			s.property.decimal().type.serializedHasChanged(undefined, undefined),
+		).toBeFalsy();
+		expect(
+			s.property.decimal().type.serializedHasChanged(null, undefined),
+		).toBeTruthy();
+		expect(
+			s.property.decimal().type.serializedHasChanged(undefined, null),
+		).toBeTruthy();
+		expect(
+			s.property.decimal().type.serializedHasChanged(null, "5.257"),
+		).toBeTruthy();
+		expect(
+			s.property.decimal().type.serializedHasChanged(undefined, "5.257"),
+		).toBeTruthy();
+		expect(
+			s.property.decimal().type.serializedHasChanged("5.257", null),
+		).toBeTruthy();
+		expect(
+			s.property.decimal().type.serializedHasChanged("5.257", undefined),
+		).toBeTruthy();
 
 		s.property.decimal().type.resetDiff(5.257);
 		s.property.decimal().type.resetDiff(undefined);
 		s.property.decimal().type.resetDiff(null);
 
 		expect(s.property.decimal().type.applyPatch(1, "5.257", false)).toBe(5.257);
-		expect(s.property.decimal().type.applyPatch(undefined, "5.257", true)).toBe(5.257);
-		expect(s.property.decimal().type.applyPatch(null, "5.257", false)).toBe(5.257);
-		expect(s.property.decimal().type.applyPatch(5.257, undefined, false)).toBeUndefined();
+		expect(s.property.decimal().type.applyPatch(undefined, "5.257", true)).toBe(
+			5.257,
+		);
+		expect(s.property.decimal().type.applyPatch(null, "5.257", false)).toBe(
+			5.257,
+		);
+		expect(
+			s.property.decimal().type.applyPatch(5.257, undefined, false),
+		).toBeUndefined();
 		expect(s.property.decimal().type.applyPatch(5.257, null, false)).toBeNull();
 	});
 
 	test("invalid parameters types", () => {
-		expect(() => s.property.decimal().type.serialize({} as any)).toThrowError(InvalidTypeValueError);
+		expect(() => s.property.decimal().type.serialize({} as any)).toThrowError(
+			InvalidTypeValueError,
+		);
 		expect(s.property.decimal().type.deserialize({} as any)).toBe(NaN);
 		expect(s.property.decimal().type.deserialize({} as any)).toBe(NaN);
-		expect(() => s.property.decimal().type.serializeDiff({} as any)).toThrowError(InvalidTypeValueError);
+		expect(() =>
+			s.property.decimal().type.serializeDiff({} as any),
+		).toThrowError(InvalidTypeValueError);
 		expect(() => s.property.decimal().type.resetDiff({} as any)).not.toThrow();
-		expect(s.property.decimal().type.hasChanged({} as any, {} as any)).toBeTruthy();
-		expect(s.property.decimal().type.hasChanged(false as any, false as any)).toBeFalsy();
-		expect(s.property.decimal().type.serializedHasChanged({} as any, {} as any)).toBeTruthy();
-		expect(s.property.decimal().type.serializedHasChanged(false as any, false as any)).toBeFalsy();
+		expect(
+			s.property.decimal().type.hasChanged({} as any, {} as any),
+		).toBeTruthy();
+		expect(
+			s.property.decimal().type.hasChanged(false as any, false as any),
+		).toBeFalsy();
+		expect(
+			s.property.decimal().type.serializedHasChanged({} as any, {} as any),
+		).toBeTruthy();
+		expect(
+			s.property
+				.decimal()
+				.type.serializedHasChanged(false as any, false as any),
+		).toBeFalsy();
 		expect(s.property.decimal().type.clone({} as any)).toStrictEqual({});
 	});
 });

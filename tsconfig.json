@@ -1,30 +1,27 @@
 {
-  "ts-node": {
-    "compilerOptions": {
-      "module": "ESNext",
-	    "types": ["node"],
-    }
-  },
+	"ts-node": {
+		"compilerOptions": {
+			"module": "ESNext",
+			"types": ["node"]
+		}
+	},
 
-  "compilerOptions": {
-    "outDir": "./lib/",
-	  "incremental": true,
-	  "sourceMap": true,
-    "noImplicitAny": true,
-	  "noImplicitThis": true,
-	  "esModuleInterop": true,
-	  "allowSyntheticDefaultImports": true,
-	  "resolveJsonModule": true,
-	  "experimentalDecorators": true,
-	  "emitDecoratorMetadata": true,
-	  "declaration": true,
-    "declarationMap": true,
-    "module": "ES6",
-	  "target": "ES6",
-    "moduleResolution": "Bundler",
-    "lib": [
-      "ESNext",
-      "DOM"
-    ]
-  }
+	"compilerOptions": {
+		"outDir": "./lib/",
+		"incremental": true,
+		"sourceMap": true,
+		"noImplicitAny": true,
+		"noImplicitThis": true,
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
+		"resolveJsonModule": true,
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true,
+		"declaration": true,
+		"declarationMap": true,
+		"module": "ES6",
+		"target": "ES6",
+		"moduleResolution": "Bundler",
+		"lib": ["ESNext", "DOM"]
+	}
 }

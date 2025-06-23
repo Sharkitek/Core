@@ -28,7 +28,9 @@ describe("boolean type", () => {
 
 		expect(s.property.boolean().type.hasChanged(true, true)).toBeFalsy();
 		expect(s.property.boolean().type.hasChanged(null, null)).toBeFalsy();
-		expect(s.property.boolean().type.hasChanged(undefined, undefined)).toBeFalsy();
+		expect(
+			s.property.boolean().type.hasChanged(undefined, undefined),
+		).toBeFalsy();
 		expect(s.property.boolean().type.hasChanged(null, undefined)).toBeTruthy();
 		expect(s.property.boolean().type.hasChanged(undefined, null)).toBeTruthy();
 		expect(s.property.boolean().type.hasChanged(null, false)).toBeTruthy();
@@ -36,28 +38,58 @@ describe("boolean type", () => {
 		expect(s.property.boolean().type.hasChanged(false, null)).toBeTruthy();
 		expect(s.property.boolean().type.hasChanged(false, undefined)).toBeTruthy();
 
-		expect(s.property.boolean().type.serializedHasChanged(false, false)).toBeFalsy();
-		expect(s.property.boolean().type.serializedHasChanged(null, null)).toBeFalsy();
-		expect(s.property.boolean().type.serializedHasChanged(undefined, undefined)).toBeFalsy();
-		expect(s.property.boolean().type.serializedHasChanged(null, undefined)).toBeTruthy();
-		expect(s.property.boolean().type.serializedHasChanged(undefined, null)).toBeTruthy();
-		expect(s.property.boolean().type.serializedHasChanged(null, false)).toBeTruthy();
-		expect(s.property.boolean().type.serializedHasChanged(undefined, false)).toBeTruthy();
-		expect(s.property.boolean().type.serializedHasChanged(false, null)).toBeTruthy();
-		expect(s.property.boolean().type.serializedHasChanged(false, undefined)).toBeTruthy();
+		expect(
+			s.property.boolean().type.serializedHasChanged(false, false),
+		).toBeFalsy();
+		expect(
+			s.property.boolean().type.serializedHasChanged(null, null),
+		).toBeFalsy();
+		expect(
+			s.property.boolean().type.serializedHasChanged(undefined, undefined),
+		).toBeFalsy();
+		expect(
+			s.property.boolean().type.serializedHasChanged(null, undefined),
+		).toBeTruthy();
+		expect(
+			s.property.boolean().type.serializedHasChanged(undefined, null),
+		).toBeTruthy();
+		expect(
+			s.property.boolean().type.serializedHasChanged(null, false),
+		).toBeTruthy();
+		expect(
+			s.property.boolean().type.serializedHasChanged(undefined, false),
+		).toBeTruthy();
+		expect(
+			s.property.boolean().type.serializedHasChanged(false, null),
+		).toBeTruthy();
+		expect(
+			s.property.boolean().type.serializedHasChanged(false, undefined),
+		).toBeTruthy();
 
 		s.property.boolean().type.resetDiff(false);
 		s.property.boolean().type.resetDiff(undefined);
 		s.property.boolean().type.resetDiff(null);
 
-		expect(s.property.boolean().type.applyPatch(false, true, true)).toBeTruthy();
-		expect(s.property.boolean().type.applyPatch(false, true, false)).toBeTruthy();
-		expect(s.property.boolean().type.applyPatch(true, false, false)).toBeFalsy();
-		expect(s.property.boolean().type.applyPatch(false, undefined, false)).toBeUndefined();
+		expect(
+			s.property.boolean().type.applyPatch(false, true, true),
+		).toBeTruthy();
+		expect(
+			s.property.boolean().type.applyPatch(false, true, false),
+		).toBeTruthy();
+		expect(
+			s.property.boolean().type.applyPatch(true, false, false),
+		).toBeFalsy();
+		expect(
+			s.property.boolean().type.applyPatch(false, undefined, false),
+		).toBeUndefined();
 		expect(s.property.boolean().type.applyPatch(false, null, false)).toBeNull();
-		expect(s.property.boolean().type.applyPatch(undefined, null, false)).toBeNull();
+		expect(
+			s.property.boolean().type.applyPatch(undefined, null, false),
+		).toBeNull();
 		expect(s.property.boolean().type.applyPatch(null, null, false)).toBeNull();
-		expect(s.property.boolean().type.applyPatch(null, false, false)).toBeFalsy();
+		expect(
+			s.property.boolean().type.applyPatch(null, false, false),
+		).toBeFalsy();
 	});
 
 	test("invalid parameters types", () => {
@@ -68,10 +100,20 @@ describe("boolean type", () => {
 		expect(s.property.boolean().type.serializeDiff(1 as any)).toBeTruthy();
 		expect(s.property.boolean().type.serializeDiff(0 as any)).toBeFalsy();
 		expect(() => s.property.boolean().type.resetDiff({} as any)).not.toThrow();
-		expect(s.property.boolean().type.hasChanged({} as any, {} as any)).toBeTruthy();
-		expect(s.property.boolean().type.hasChanged(false as any, false as any)).toBeFalsy();
-		expect(s.property.boolean().type.serializedHasChanged({} as any, {} as any)).toBeTruthy();
-		expect(s.property.boolean().type.serializedHasChanged(false as any, false as any)).toBeFalsy();
+		expect(
+			s.property.boolean().type.hasChanged({} as any, {} as any),
+		).toBeTruthy();
+		expect(
+			s.property.boolean().type.hasChanged(false as any, false as any),
+		).toBeFalsy();
+		expect(
+			s.property.boolean().type.serializedHasChanged({} as any, {} as any),
+		).toBeTruthy();
+		expect(
+			s.property
+				.boolean()
+				.type.serializedHasChanged(false as any, false as any),
+		).toBeFalsy();
 		expect(s.property.boolean().type.clone({} as any)).toStrictEqual({});
 	});
 });

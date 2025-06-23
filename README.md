@@ -44,8 +44,7 @@ With Sharkitek, you define the architecture of your models by specifying their p
 Then, you can use the defined methods like `serialize`, `parse`, `patch` or `serializeDiff`.
 
 ```typescript
-class Example
-{
+class Example {
 	static model = defineModel({
 		Class: Example,
 		properties: {
@@ -54,7 +53,7 @@ class Example
 		},
 		identifier: "id",
 	});
-	
+
 	id: number;
 	name: string;
 }
@@ -70,8 +69,7 @@ class Example
 /**
  * A person.
  */
-class Person
-{
+class Person {
 	static model = defineModel({
 		Class: Person,
 		properties: {
@@ -83,7 +81,7 @@ class Person
 		},
 		identifier: "id",
 	});
-	
+
 	id: number;
 	name: string;
 	email: string;
@@ -96,8 +94,7 @@ class Person
 /**
  * An article.
  */
-class Article
-{
+class Article {
 	static model = defineModel({
 		Class: Article,
 		properties: {
@@ -109,12 +106,12 @@ class Article
 			tags: s.property.array(
 				s.property.object({
 					name: s.property.string(),
-				})
+				}),
 			),
 		},
 		identifier: "id",
 	});
-	
+
 	id: number;
 	title: string;
 	authors: Person[] = [];
@@ -130,8 +127,7 @@ class Article
 /**
  * A model with composite keys.
  */
-class CompositeKeys
-{
+class CompositeKeys {
 	static model = defineModel({
 		Class: CompositeKeys,
 		properties: {
@@ -140,7 +136,7 @@ class CompositeKeys
 		},
 		identifier: ["id1", "id2"],
 	});
-	
+
 	id1: number;
 	id2: string;
 }
@@ -225,15 +221,14 @@ Sharkitek defines some basic types by default, in these classes:
 When you are defining a property of a Sharkitek model, you must provide its type by instantiating one of these classes.
 
 ```typescript
-class Example
-{
+class Example {
 	static model = defineModel({
 		Class: Example,
 		properties: {
 			foo: s.property.define(new StringType()),
 		},
 	});
-	
+
 	foo: string;
 }
 ```
@@ -253,15 +248,14 @@ To ease the use of these classes and reduce read complexity, properties of each 
 Type implementers should provide a corresponding function for each defined type. They can even provide multiple functions or constants with predefined parameters. For example, we could define `s.property.stringArray()` which would be similar to `s.property.array(s.property.string())`.
 
 ```typescript
-class Example
-{
+class Example {
 	static model = defineModel({
 		Class: Example,
 		properties: {
 			foo: s.property.string(),
 		},
 	});
-	
+
 	foo: string;
 }
 ```

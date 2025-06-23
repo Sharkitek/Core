@@ -5,56 +5,70 @@ import {InvalidTypeValueError} from "../../errors";
 /**
  * Type of an array of values.
  */
-export class ArrayType<SerializedValueType, SharkitekValueType> extends Type<SerializedValueType[], SharkitekValueType[]>
-{
+export class ArrayType<SerializedValueType, SharkitekValueType> extends Type<
+	SerializedValueType[],
+	SharkitekValueType[]
+> {
 	/**
 	 * Initialize a new array type of a Sharkitek model property.
 	 * @param valueDefinition Definition the array values.
 	 */
-	constructor(protected valueDefinition: Definition<SerializedValueType, SharkitekValueType>)
-	{
+	constructor(
+		protected valueDefinition: Definition<
+			SerializedValueType,
+			SharkitekValueType
+		>,
+	) {
 		super();
 	}
 
-	serialize(value: SharkitekValueType[]|null|undefined): SerializedValueType[]|null|undefined
-	{
+	serialize(
+		value: SharkitekValueType[] | null | undefined,
+	): SerializedValueType[] | null | undefined {
 		if (value === undefined) return undefined;
 		if (value === null) return null;
 
-		if (!Array.isArray(value)) throw new InvalidTypeValueError(this, value, "value must be an array");
+		if (!Array.isArray(value))
+			throw new InvalidTypeValueError(this, value, "value must be an array");
 
-		return value.map((value) => (
+		return value.map((value) =>
 			// Serializing each value of the array.
-			this.valueDefinition.type.serialize(value)
-		));
+			this.valueDefinition.type.serialize(value),
+		);
 	}
 
-	deserialize(value: SerializedValueType[]|null|undefined): SharkitekValueType[]|null|undefined
-	{
+	deserialize(
+		value: SerializedValueType[] | null | undefined,
+	): SharkitekValueType[] | null | undefined {
 		if (value === undefined) return undefined;
 		if (value === null) return null;
 
-		if (!Array.isArray(value)) throw new InvalidTypeValueError(this, value, "value must be an array");
+		if (!Array.isArray(value))
+			throw new InvalidTypeValueError(this, value, "value must be an array");
 
-		return value.map((serializedValue) => (
+		return value.map((serializedValue) =>
 			// Deserializing each value of the array.
-			this.valueDefinition.type.deserialize(serializedValue)
-		));
+			this.valueDefinition.type.deserialize(serializedValue),
+		);
 	}
 
-	serializeDiff(value: SharkitekValueType[]|null|undefined): SerializedValueType[]|null|undefined
-	{
+	serializeDiff(
+		value: SharkitekValueType[] | null | undefined,
+	): SerializedValueType[] | null | undefined {
 		if (value === undefined) return undefined;
 		if (value === null) return null;
 
-		if (!Array.isArray(value)) throw new InvalidTypeValueError(this, value, "value must be an array");
+		if (!Array.isArray(value))
+			throw new InvalidTypeValueError(this, value, "value must be an array");
 
 		// Serializing diff of all elements.
-		return value.map((value) => this.valueDefinition.type.serializeDiff(value) as SerializedValueType);
+		return value.map(
+			(value) =>
+				this.valueDefinition.type.serializeDiff(value) as SerializedValueType,
+		);
 	}
 
-	resetDiff(value: SharkitekValueType[]|null|undefined): void
-	{
+	resetDiff(value: SharkitekValueType[] | null | undefined): void {
 		// Do nothing if it is not an array.
 		if (!Array.isArray(value)) return;
 
@@ -62,16 +76,24 @@ export class ArrayType<SerializedValueType, SharkitekValueType> extends Type<Ser
 		value.forEach((value) => this.valueDefinition.type.resetDiff(value));
 	}
 
-	hasChanged(originalValue: SharkitekValueType[]|null|undefined, currentValue: SharkitekValueType[]|null|undefined): boolean
-	{
+	hasChanged(
+		originalValue: SharkitekValueType[] | null | undefined,
+		currentValue: SharkitekValueType[] | null | undefined,
+	): boolean {
 		// If any array length is different, arrays are different.
 		if (originalValue?.length != currentValue?.length) return true;
 		// If length is undefined, values are probably not arrays.
-		if (originalValue?.length == undefined) return super.hasChanged(originalValue, currentValue);
+		if (originalValue?.length == undefined)
+			return super.hasChanged(originalValue, currentValue);
 
-		for (const key of originalValue.keys())
-		{ // Check for any change for each value in the array.
-			if (this.valueDefinition.type.hasChanged(originalValue[key], currentValue[key]))
+		for (const key of originalValue.keys()) {
+			// Check for any change for each value in the array.
+			if (
+				this.valueDefinition.type.hasChanged(
+					originalValue[key],
+					currentValue[key],
+				)
+			)
 				// The value has changed, the array is different.
 				return true;
 		}
@@ -79,16 +101,24 @@ export class ArrayType<SerializedValueType, SharkitekValueType> extends Type<Ser
 		return false; // No change detected.
 	}
 
-	serializedHasChanged(originalValue: SerializedValueType[] | null | undefined, currentValue: SerializedValueType[] | null | undefined): boolean
-	{
+	serializedHasChanged(
+		originalValue: SerializedValueType[] | null | undefined,
+		currentValue: SerializedValueType[] | null | undefined,
+	): boolean {
 		// If any array length is different, arrays are different.
 		if (originalValue?.length != currentValue?.length) return true;
 		// If length is undefined, values are probably not arrays.
-		if (originalValue?.length == undefined) return super.serializedHasChanged(originalValue, currentValue);
+		if (originalValue?.length == undefined)
+			return super.serializedHasChanged(originalValue, currentValue);
 
-		for (const key of originalValue.keys())
-		{ // Check for any change for each value in the array.
-			if (this.valueDefinition.type.serializedHasChanged(originalValue[key], currentValue[key]))
+		for (const key of originalValue.keys()) {
+			// Check for any change for each value in the array.
+			if (
+				this.valueDefinition.type.serializedHasChanged(
+					originalValue[key],
+					currentValue[key],
+				)
+			)
 				// The value has changed, the array is different.
 				return true;
 		}
@@ -96,41 +126,50 @@ export class ArrayType<SerializedValueType, SharkitekValueType> extends Type<Ser
 		return false; // No change detected.
 	}
 
-	clone<T extends SharkitekValueType[]>(array: T|null|undefined): T
-	{
+	clone<T extends SharkitekValueType[]>(array: T | null | undefined): T {
 		// Handle NULL / undefined array.
 		if (!array) return super.clone(array);
 
-		if (!Array.isArray(array)) throw new InvalidTypeValueError(this, array, "value must be an array");
+		if (!Array.isArray(array))
+			throw new InvalidTypeValueError(this, array, "value must be an array");
 
 		// Initialize an empty array.
 		const cloned = [] as T;
 
-		for (const value of array)
-		{ // Clone each value of the array.
+		for (const value of array) {
+			// Clone each value of the array.
 			cloned.push(this.valueDefinition.type.clone(value));
 		}
 
 		return cloned; // Returning cloned array.
 	}
 
-	applyPatch<T extends SharkitekValueType[]>(currentValue: T|null|undefined, patchValue: SerializedValueType[]|null|undefined, updateOriginals: boolean): T|null|undefined
-	{
+	applyPatch<T extends SharkitekValueType[]>(
+		currentValue: T | null | undefined,
+		patchValue: SerializedValueType[] | null | undefined,
+		updateOriginals: boolean,
+	): T | null | undefined {
 		if (patchValue === undefined) return undefined;
 		if (patchValue === null) return null;
 
 		if (!Array.isArray(patchValue))
-			throw new InvalidTypeValueError(this, patchValue, "value must be an array");
+			throw new InvalidTypeValueError(
+				this,
+				patchValue,
+				"value must be an array",
+			);
 
-		currentValue = Array.isArray(currentValue) ? currentValue : [] as T;
+		currentValue = Array.isArray(currentValue) ? currentValue : ([] as T);
 
-		for (let i = 0; i < patchValue.length; i++)
-		{ // Apply the patch to all values of the array.
-			const patchedElement = this.valueDefinition.type.applyPatch(currentValue?.[i], patchValue[i], updateOriginals);
-			if (i < currentValue.length)
-				currentValue[i] = patchedElement;
-			else
-				currentValue.push(patchedElement);
+		for (let i = 0; i < patchValue.length; i++) {
+			// Apply the patch to all values of the array.
+			const patchedElement = this.valueDefinition.type.applyPatch(
+				currentValue?.[i],
+				patchValue[i],
+				updateOriginals,
+			);
+			if (i < currentValue.length) currentValue[i] = patchedElement;
+			else currentValue.push(patchedElement);
 		}
 
 		return currentValue;
@@ -141,7 +180,8 @@ export class ArrayType<SerializedValueType, SharkitekValueType> extends Type<Ser
  * New array property definition.
  * @param valueDefinition Array values type definition.
  */
-export function array<SerializedValueType, SharkitekValueType>(valueDefinition: Definition<SerializedValueType, SharkitekValueType>): Definition<SerializedValueType[], SharkitekValueType[]>
-{
+export function array<SerializedValueType, SharkitekValueType>(
+	valueDefinition: Definition<SerializedValueType, SharkitekValueType>,
+): Definition<SerializedValueType[], SharkitekValueType[]> {
 	return define(new ArrayType(valueDefinition));
 }

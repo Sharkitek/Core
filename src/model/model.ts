@@ -11,7 +11,10 @@ export type ModelShape<T extends object> = Partial<{
 /**
  * Properties values of a model based on its shape.
  */
-export type ModelPropertiesValues<T extends object, Shape extends ModelShape<T>> = {
+export type ModelPropertiesValues<
+	T extends object,
+	Shape extends ModelShape<T>,
+> = {
 	[k in keyof Shape]: Shape[k]["_sharkitek"];
 };
 
@@ -26,20 +29,38 @@ export type SerializedModel<T extends object, Shape extends ModelShape<T>> = {
  * This is an experimental serialized model type declaration.
  * @deprecated
  */
-type ExperimentalSerializedModel<T extends object, Shape extends ModelShape<T>>
-	= Omit<ExperimentalSerializedModelBase<T, Shape>, ExperimentalSerializedModelOptionalKeys<T, Shape>>
-	& Pick<Partial<ExperimentalSerializedModelBase<T, Shape>>, ExperimentalSerializedModelOptionalKeys<T, Shape>>;
-type ExperimentalSerializedModelBase<T extends object, Shape extends ModelShape<T>> = {
+type ExperimentalSerializedModel<
+	T extends object,
+	Shape extends ModelShape<T>,
+> = Omit<
+	ExperimentalSerializedModelBase<T, Shape>,
+	ExperimentalSerializedModelOptionalKeys<T, Shape>
+> &
+	Pick<
+		Partial<ExperimentalSerializedModelBase<T, Shape>>,
+		ExperimentalSerializedModelOptionalKeys<T, Shape>
+	>;
+type ExperimentalSerializedModelBase<
+	T extends object,
+	Shape extends ModelShape<T>,
+> = {
 	[k in keyof Shape]: Shape[k]["_serialized"];
 };
-type ExperimentalSerializedModelOptionalKeys<T extends object, Shape extends ModelShape<T>> = {
-	[k in keyof Shape]: Shape[k]["_serialized"] extends undefined ? k : never
+type ExperimentalSerializedModelOptionalKeys<
+	T extends object,
+	Shape extends ModelShape<T>,
+> = {
+	[k in keyof Shape]: Shape[k]["_serialized"] extends undefined ? k : never;
 }[keyof Shape];
 
 /**
  * A sharkitek model instance, with internal model state.
  */
-export type ModelInstance<T extends object, Shape extends ModelShape<T>, Identifier extends IdentifierDefinition<T, Shape>> = T & {
+export type ModelInstance<
+	T extends object,
+	Shape extends ModelShape<T>,
+	Identifier extends IdentifierDefinition<T, Shape>,
+> = T & {
 	/**
 	 * The Sharkitek model state.
 	 */
@@ -49,19 +70,34 @@ export type ModelInstance<T extends object, Shape extends ModelShape<T>, Identif
 /**
  * Identifier definition type.
  */
-export type IdentifierDefinition<T extends object, Shape extends ModelShape<T>> = (keyof Shape)|((keyof Shape)[]);
+export type IdentifierDefinition<
+	T extends object,
+	Shape extends ModelShape<T>,
+> = keyof Shape | (keyof Shape)[];
 
 /**
  * Identifier type.
  */
-export type IdentifierType<T extends object, Shape extends ModelShape<T>, Identifier extends IdentifierDefinition<T, Shape>>
-	= Identifier extends keyof Shape ? Shape[Identifier]["_sharkitek"] : { [K in keyof Identifier]: Identifier[K] extends keyof Shape ? Shape[Identifier[K]]["_sharkitek"] : unknown };
+export type IdentifierType<
+	T extends object,
+	Shape extends ModelShape<T>,
+	Identifier extends IdentifierDefinition<T, Shape>,
+> = Identifier extends keyof Shape
+	? Shape[Identifier]["_sharkitek"]
+	: {
+			[K in keyof Identifier]: Identifier[K] extends keyof Shape
+				? Shape[Identifier[K]]["_sharkitek"]
+				: unknown;
+		};
 
 /**
  * A model definition object.
  */
-export interface ModelDefinition<T extends object, Shape extends ModelShape<T>, Identifier extends IdentifierDefinition<T, Shape>>
-{
+export interface ModelDefinition<
+	T extends object,
+	Shape extends ModelShape<T>,
+	Identifier extends IdentifierDefinition<T, Shape>,
+> {
 	/**
 	 * Model class.
 	 */
@@ -83,8 +119,7 @@ export interface ModelDefinition<T extends object, Shape extends ModelShape<T>, 
 /**
  * A model property.
  */
-export interface ModelProperty<T extends object, Shape extends ModelShape<T>>
-{
+export interface ModelProperty<T extends object, Shape extends ModelShape<T>> {
 	/**
 	 * Property name.
 	 */
@@ -104,13 +139,19 @@ export interface ModelProperty<T extends object, Shape extends ModelShape<T>>
 /**
  * Model properties iterator object.
  */
-export type ModelProperties<T extends object, Shape extends ModelShape<T>> = ModelProperty<T, Shape>[];
+export type ModelProperties<
+	T extends object,
+	Shape extends ModelShape<T>,
+> = ModelProperty<T, Shape>[];
 
 /**
  * A Sharkitek model state.
  */
-export class Model<T extends object, Shape extends ModelShape<T>, Identifier extends IdentifierDefinition<T, Shape>>
-{
+export class Model<
+	T extends object,
+	Shape extends ModelShape<T>,
+	Identifier extends IdentifierDefinition<T, Shape>,
+> {
 	/**
 	 * The model manager instance.
 	 */
@@ -144,15 +185,14 @@ export class Model<T extends object, Shape extends ModelShape<T>, Identifier ext
 		/**
 		 * The original serialized object, if there is one.
 		 */
-		serialized: SerializedModel<T, Shape>|null;
+		serialized: SerializedModel<T, Shape> | null;
 	};
 
 	/**
 	 * Initialize a new model state with the defined properties.
 	 * @param manager The model manager.
 	 */
-	constructor(manager: ModelManager<T, Shape, Identifier>)
-	{
+	constructor(manager: ModelManager<T, Shape, Identifier>) {
 		this.manager = manager;
 		this.definition = manager.definition;
 		this.properties = manager.properties;
@@ -161,11 +201,10 @@ export class Model<T extends object, Shape extends ModelShape<T>, Identifier ext
 	/**
 	 * Initialize the Sharkitek model state for a new instance.
 	 */
-	initInstance(): this
-	{
+	initInstance(): this {
 		return this.fromInstance(
 			// Initialize a new model instance.
-			new (this.definition.Class)()
+			new this.definition.Class(),
 		);
 	}
 
@@ -173,8 +212,7 @@ export class Model<T extends object, Shape extends ModelShape<T>, Identifier ext
 	 * Initialize the Sharkitek model state for the provided instance.
 	 * @param instance The model instance.
 	 */
-	fromInstance(instance: T): this
-	{
+	fromInstance(instance: T): this {
 		// Initialize the sharkitek model instance.
 		const sharkitekInstance = instance as ModelInstance<T, Shape, Identifier>;
 
@@ -188,8 +226,8 @@ export class Model<T extends object, Shape extends ModelShape<T>, Identifier ext
 		if (originalInstance)
 			// Share the same original values object.
 			this.original = originalInstance.original;
-		else
-		{ // Initialize a new original values object, based on the current values of the instance.
+		else {
+			// Initialize a new original values object, based on the current values of the instance.
 			this.original = {
 				properties: undefined,
 				serialized: null,
@@ -204,14 +242,14 @@ export class Model<T extends object, Shape extends ModelShape<T>, Identifier ext
 	 * Deserialize provided data to a new model instance.
 	 * @param serialized Serialized model.
 	 */
-	deserialize(serialized: SerializedModel<T, Shape>): this
-	{
+	deserialize(serialized: SerializedModel<T, Shape>): this {
 		// Initialize a new model instance.
 		this.initInstance();
 
-		for (const property of this.properties)
-		{ // For each defined model property, assigning its deserialized value.
-			(this.instance[property.name as keyof T] as any) = property.definition.type.deserialize(serialized[property.name]);
+		for (const property of this.properties) {
+			// For each defined model property, assigning its deserialized value.
+			(this.instance[property.name as keyof T] as any) =
+				property.definition.type.deserialize(serialized[property.name]);
 		}
 
 		// Reset original property values.
@@ -225,29 +263,31 @@ export class Model<T extends object, Shape extends ModelShape<T>, Identifier ext
 	/**
 	 * Get current model instance identifier.
 	 */
-	getIdentifier(): IdentifierType<T, Shape, Identifier>
-	{
-		if (Array.isArray(this.definition.identifier))
-		{ // The identifier is composite, make an array of properties values.
-			return this.definition.identifier.map(identifier => this.instance?.[identifier as keyof T]) as IdentifierType<T, Shape, Identifier>;
-		}
-		else
-		{ // The identifier is a simple property, get its value.
-			return this.instance?.[this.definition.identifier as keyof Shape as keyof T] as IdentifierType<T, Shape, Identifier>;
+	getIdentifier(): IdentifierType<T, Shape, Identifier> {
+		if (Array.isArray(this.definition.identifier)) {
+			// The identifier is composite, make an array of properties values.
+			return this.definition.identifier.map(
+				(identifier) => this.instance?.[identifier as keyof T],
+			) as IdentifierType<T, Shape, Identifier>;
+		} else {
+			// The identifier is a simple property, get its value.
+			return this.instance?.[
+				this.definition.identifier as keyof Shape as keyof T
+			] as IdentifierType<T, Shape, Identifier>;
 		}
 	}
 
 	/**
 	 * Get current model instance properties.
 	 */
-	getInstanceProperties(): ModelPropertiesValues<T, Shape>
-	{
+	getInstanceProperties(): ModelPropertiesValues<T, Shape> {
 		// Initialize an empty model properties object.
 		const instanceProperties: Partial<ModelPropertiesValues<T, Shape>> = {};
 
-		for (const property of this.properties)
-		{ // For each defined model property, adding it to the properties object.
-			instanceProperties[property.name] = this.instance?.[property.name as keyof T]; // keyof Shape is a subset of keyof T.
+		for (const property of this.properties) {
+			// For each defined model property, adding it to the properties object.
+			instanceProperties[property.name] =
+				this.instance?.[property.name as keyof T]; // keyof Shape is a subset of keyof T.
 		}
 
 		return instanceProperties as ModelPropertiesValues<T, Shape>; // Returning the properties object.
@@ -256,13 +296,12 @@ export class Model<T extends object, Shape extends ModelShape<T>, Identifier ext
 	/**
 	 * Serialize the model instance.
 	 */
-	serialize(): SerializedModel<T, Shape>
-	{
+	serialize(): SerializedModel<T, Shape> {
 		// Creating an empty serialized object.
 		const serializedObject: Partial<SerializedModel<T, Shape>> = {};
 
-		for (const property of this.properties)
-		{ // For each defined model property, adding it to the serialized object.
+		for (const property of this.properties) {
+			// For each defined model property, adding it to the serialized object.
 			serializedObject[property.name] = property.definition.type.serialize(
 				// keyof Shape is a subset of keyof T.
 				this.instance?.[property.name as keyof T],
@@ -275,19 +314,22 @@ export class Model<T extends object, Shape extends ModelShape<T>, Identifier ext
 	/**
 	 * Examine if the model is new (never deserialized) or not.
 	 */
-	isNew(): boolean
-	{
+	isNew(): boolean {
 		return !this.original.serialized;
 	}
 
 	/**
 	 * Examine if the model is dirty or not.
 	 */
-	isDirty(): boolean
-	{
-		for (const property of this.properties)
-		{ // For each property, check if it is different.
-			if (property.definition.type.hasChanged(this.original.properties?.[property.name], this.instance?.[property.name as keyof T]))
+	isDirty(): boolean {
+		for (const property of this.properties) {
+			// For each property, check if it is different.
+			if (
+				property.definition.type.hasChanged(
+					this.original.properties?.[property.name],
+					this.instance?.[property.name as keyof T],
+				)
+			)
 				// There is a difference: the model is dirty.
 				return true;
 		}
@@ -299,19 +341,23 @@ export class Model<T extends object, Shape extends ModelShape<T>, Identifier ext
 	/**
 	 * Serialize the difference between current model state and the original one.
 	 */
-	serializeDiff(): Partial<SerializedModel<T, Shape>>
-	{
+	serializeDiff(): Partial<SerializedModel<T, Shape>> {
 		// Creating an empty serialized object.
 		const serializedObject: Partial<SerializedModel<T, Shape>> = {};
 
-		for (const property of this.properties)
-		{ // For each defined model property, adding it to the serialized object if it has changed or if it is in the identifier.
+		for (const property of this.properties) {
+			// For each defined model property, adding it to the serialized object if it has changed or if it is in the identifier.
 			const instancePropValue = this.instance?.[property.name as keyof T]; // keyof Shape is a subset of keyof T.
 			if (
 				property.identifier ||
-				property.definition.type.hasChanged(this.original.properties?.[property.name], instancePropValue)
-			) // The property is part of the identifier or its value has changed.
-				serializedObject[property.name] = property.definition.type.serializeDiff(instancePropValue);
+				property.definition.type.hasChanged(
+					this.original.properties?.[property.name],
+					instancePropValue,
+				)
+			)
+				// The property is part of the identifier or its value has changed.
+				serializedObject[property.name] =
+					property.definition.type.serializeDiff(instancePropValue);
 		}
 
 		return serializedObject; // Returning the serialized object.
@@ -320,13 +366,13 @@ export class Model<T extends object, Shape extends ModelShape<T>, Identifier ext
 	/**
 	 * Set current model properties as original values.
 	 */
-	resetDiff(): void
-	{
+	resetDiff(): void {
 		this.original.properties = {};
-		for (const property of this.properties)
-		{ // For each property, set its original value to the current property value.
+		for (const property of this.properties) {
+			// For each property, set its original value to the current property value.
 			const instancePropValue = this.instance?.[property.name as keyof T];
-			this.original.properties[property.name] = property.definition.type.clone(instancePropValue);
+			this.original.properties[property.name] =
+				property.definition.type.clone(instancePropValue);
 			property.definition.type.resetDiff(instancePropValue);
 		}
 	}
@@ -335,8 +381,7 @@ export class Model<T extends object, Shape extends ModelShape<T>, Identifier ext
 	 * Get difference between original values and current ones, then reset it.
 	 * Similar to call `serializeDiff()` then `resetDiff()`.
 	 */
-	patch(): Partial<SerializedModel<T, Shape>>
-	{
+	patch(): Partial<SerializedModel<T, Shape>> {
 		// Get the difference.
 		const diff = this.serializeDiff();
 
@@ -349,32 +394,36 @@ export class Model<T extends object, Shape extends ModelShape<T>, Identifier ext
 	/**
 	 * Clone the model instance.
 	 */
-	clone(): ModelInstance<T, Shape, Identifier>
-	{
+	clone(): ModelInstance<T, Shape, Identifier> {
 		// Initialize a new instance for the clone.
 		const cloned = this.manager.model();
 
 		// Clone every value of the model instance.
-		for (const [key, value] of Object.entries(this.instance) as [keyof T, unknown][])
-		{ // For each [key, value], clone the value and put it in the cloned instance.
+		for (const [key, value] of Object.entries(this.instance) as [
+			keyof T,
+			unknown,
+		][]) {
+			// For each [key, value], clone the value and put it in the cloned instance.
 
 			// Do not clone ourselves.
 			if (key == "_sharkitek") continue;
 
-			if (this.definition.properties[key])
-			{ // The current key is a defined property, clone using the defined type.
-				(cloned.instance[key] as any) = (this.definition.properties[key] as UnknownDefinition).type.clone(value);
-			}
-			else
-			{ // Not a property, cloning the raw value.
+			if (this.definition.properties[key]) {
+				// The current key is a defined property, clone using the defined type.
+				(cloned.instance[key] as any) = (
+					this.definition.properties[key] as UnknownDefinition
+				).type.clone(value);
+			} else {
+				// Not a property, cloning the raw value.
 				(cloned.instance[key] as any) = structuredClone(value);
 			}
 		}
 
 		// Clone original properties.
-		for (const property of this.properties)
-		{ // For each property, clone its original value.
-			cloned.original.properties[property.name] = property.definition.type.clone(this.original.properties[property.name]);
+		for (const property of this.properties) {
+			// For each property, clone its original value.
+			cloned.original.properties[property.name] =
+				property.definition.type.clone(this.original.properties[property.name]);
 		}
 
 		// Clone original serialized.
@@ -388,10 +437,11 @@ export class Model<T extends object, Shape extends ModelShape<T>, Identifier ext
 	 * Fields that cannot be matched to existing properties are silently ignored.
 	 * @param fields The fields to assign to the model.
 	 */
-	assign(fields: Partial<ModelPropertiesValues<T, Shape>> & {[field: string]: any}): ModelInstance<T, Shape, Identifier>
-	{
-		for (const field in fields)
-		{ // For each field, if it's a property, assign its value.
+	assign(
+		fields: Partial<ModelPropertiesValues<T, Shape>> & {[field: string]: any},
+	): ModelInstance<T, Shape, Identifier> {
+		for (const field in fields) {
+			// For each field, if it's a property, assign its value.
 			if ((this.definition.properties as any)?.[field])
 				// Set the instance value.
 				this.instance[field as keyof T] = fields[field];
@@ -404,26 +454,38 @@ export class Model<T extends object, Shape extends ModelShape<T>, Identifier ext
 	 * @param patch The patch object to apply.
 	 * @param updateOriginals Indicates if the original properties values must be updated or not. By default, they are reset.
 	 */
-	applyPatch(patch: SerializedModel<T, Shape>, updateOriginals: boolean = true): ModelInstance<T, Shape, Identifier>
-	{
-		if (updateOriginals)
-		{ // If serialized original is null and we need to update it, initialize it.
+	applyPatch(
+		patch: SerializedModel<T, Shape>,
+		updateOriginals: boolean = true,
+	): ModelInstance<T, Shape, Identifier> {
+		if (updateOriginals) {
+			// If serialized original is null and we need to update it, initialize it.
 			this.original.serialized = this.serialize();
 		}
 
-		for (const serializedField in patch)
-		{ // For each field, if it's a property, assign its value.
+		for (const serializedField in patch) {
+			// For each field, if it's a property, assign its value.
 			// Get the property definition.
-			const property = this.definition.properties[serializedField as keyof Shape];
-			if (property)
-			{ // Found a matching model property, assigning its deserialized value.
-				(this.instance[serializedField as keyof Shape as keyof T] as any) =
-					(property as UnknownDefinition).type.applyPatch(this.instance[serializedField as keyof Shape as keyof T], patch[serializedField], updateOriginals);
+			const property =
+				this.definition.properties[serializedField as keyof Shape];
+			if (property) {
+				// Found a matching model property, assigning its deserialized value.
+				(this.instance[serializedField as keyof Shape as keyof T] as any) = (
+					property as UnknownDefinition
+				).type.applyPatch(
+					this.instance[serializedField as keyof Shape as keyof T],
+					patch[serializedField],
+					updateOriginals,
+				);
 
-				if (updateOriginals)
-				{ // Update original values.
+				if (updateOriginals) {
+					// Update original values.
 					// Set original property value.
-					(this.original.properties[serializedField] as any) = (property as UnknownDefinition).type.clone(this.instance[serializedField as keyof Shape as keyof T]);
+					(this.original.properties[serializedField] as any) = (
+						property as UnknownDefinition
+					).type.clone(
+						this.instance[serializedField as keyof Shape as keyof T],
+					);
 					// Set original serialized value.
 					this.original.serialized[serializedField] = patch[serializedField];
 				}
@@ -433,13 +495,14 @@ export class Model<T extends object, Shape extends ModelShape<T>, Identifier ext
 	}
 }
 
-
-
 /**
  * A model manager, created from a model definition.
  */
-export class ModelManager<T extends object, Shape extends ModelShape<T>, Identifier extends IdentifierDefinition<T, Shape>>
-{
+export class ModelManager<
+	T extends object,
+	Shape extends ModelShape<T>,
+	Identifier extends IdentifierDefinition<T, Shape>,
+> {
 	/**
 	 * Defined properties.
 	 */
@@ -449,8 +512,9 @@ export class ModelManager<T extends object, Shape extends ModelShape<T>, Identif
 	 * Initialize a model manager from a model definition.
 	 * @param definition The model definition.
 	 */
-	constructor(public readonly definition: ModelDefinition<T, Shape, Identifier>)
-	{
+	constructor(
+		public readonly definition: ModelDefinition<T, Shape, Identifier>,
+	) {
 		this.initProperties();
 	}
 
@@ -458,23 +522,22 @@ export class ModelManager<T extends object, Shape extends ModelShape<T>, Identif
 	 * Initialize properties iterator from current definition.
 	 * @protected
 	 */
-	protected initProperties(): void
-	{
+	protected initProperties(): void {
 		// Build an array of model properties from the definition.
 		this.properties = [];
-		for (const propertyName in this.definition.properties)
-		{ // For each property, build a model property object.
+		for (const propertyName in this.definition.properties) {
+			// For each property, build a model property object.
 			this.properties.push({
 				name: propertyName,
 				definition: this.definition.properties[propertyName],
 				// Find out if the current property is part of the identifier.
-				identifier: (
-					Array.isArray(this.definition.identifier)
-						// The identifier is an array, the property must be in the array.
-						? this.definition.identifier.includes(propertyName as keyof Shape as keyof T)
-						// The identifier is a single string, the property must be the defined identifier.
-						: (this.definition.identifier == propertyName as keyof Shape)
-				),
+				identifier: Array.isArray(this.definition.identifier)
+					? // The identifier is an array, the property must be in the array.
+						this.definition.identifier.includes(
+							propertyName as keyof Shape as keyof T,
+						)
+					: // The identifier is a single string, the property must be the defined identifier.
+						this.definition.identifier == (propertyName as keyof Shape),
 			} as ModelProperty<T, Shape>);
 		}
 	}
@@ -483,14 +546,19 @@ export class ModelManager<T extends object, Shape extends ModelShape<T>, Identif
 	 * Get the model state of the provided model instance.
 	 * @param instance The model instance for which to get its state. NULL or undefined to create a new one.
 	 */
-	model(instance: T|ModelInstance<T, Shape, Identifier>|null = null): Model<T, Shape, Identifier>
-	{ // Get the instance model state if there is one, or initialize a new one.
+	model(
+		instance: T | ModelInstance<T, Shape, Identifier> | null = null,
+	): Model<T, Shape, Identifier> {
+		// Get the instance model state if there is one, or initialize a new one.
 		if (instance)
 			// There is an instance, create a model from it.
-			return ((instance as ModelInstance<T, Shape, Identifier>)?._sharkitek ?? (new Model<T, Shape, Identifier>(this))).fromInstance(instance);
+			return (
+				(instance as ModelInstance<T, Shape, Identifier>)?._sharkitek ??
+				new Model<T, Shape, Identifier>(this)
+			).fromInstance(instance);
 		else
 			// No instance, initialize a new one.
-			return (new Model<T, Shape, Identifier>(this)).initInstance();
+			return new Model<T, Shape, Identifier>(this).initInstance();
 	}
 
 	/**
@@ -498,8 +566,9 @@ export class ModelManager<T extends object, Shape extends ModelShape<T>, Identif
 	 * Fields that cannot be matched to existing properties are silently ignored.
 	 * @param fields
 	 */
-	from(fields: Partial<ModelPropertiesValues<T, Shape>> & {[field: string]: any}): ModelInstance<T, Shape, Identifier>
-	{
+	from(
+		fields: Partial<ModelPropertiesValues<T, Shape>> & {[field: string]: any},
+	): ModelInstance<T, Shape, Identifier> {
 		return this.model().assign(fields);
 	}
 
@@ -507,8 +576,9 @@ export class ModelManager<T extends object, Shape extends ModelShape<T>, Identif
 	 * Parse the serialized model object to a new model instance.
 	 * @param serialized The serialized model object.
 	 */
-	parse(serialized: SerializedModel<T, Shape>): ModelInstance<T, Shape, Identifier>
-	{
+	parse(
+		serialized: SerializedModel<T, Shape>,
+	): ModelInstance<T, Shape, Identifier> {
 		return this.model().deserialize(serialized).instance;
 	}
 }
@@ -517,10 +587,11 @@ export class ModelManager<T extends object, Shape extends ModelShape<T>, Identif
  * Define a new model.
  * @param definition The model definition object.
  */
-export function defineModel<T extends object, Shape extends ModelShape<T>, Identifier extends IdentifierDefinition<T, Shape>>(
-	definition: ModelDefinition<T, Shape, Identifier>
-)
-{
+export function defineModel<
+	T extends object,
+	Shape extends ModelShape<T>,
+	Identifier extends IdentifierDefinition<T, Shape>,
+>(definition: ModelDefinition<T, Shape, Identifier>) {
 	return new ModelManager<T, Shape, Identifier>(definition);
 }
 
@@ -530,16 +601,21 @@ export function defineModel<T extends object, Shape extends ModelShape<T>, Ident
  * @param definition The extension of the model definition object.
  */
 export function extend<
-	ExtT extends object, ExtShape extends ModelShape<ExtT>, ExtIdentifier extends IdentifierDefinition<ExtT, ExtShape>,
-	T extends ExtT, Shape extends ModelShape<T>, Identifier extends IdentifierDefinition<T, Shape>,
-	ResIdentifier extends IdentifierDefinition<T, ResShape>, ResShape extends ModelShape<T> = Modify<ExtShape, Shape>
+	ExtT extends object,
+	ExtShape extends ModelShape<ExtT>,
+	ExtIdentifier extends IdentifierDefinition<ExtT, ExtShape>,
+	T extends ExtT,
+	Shape extends ModelShape<T>,
+	Identifier extends IdentifierDefinition<T, Shape>,
+	ResIdentifier extends IdentifierDefinition<T, ResShape>,
+	ResShape extends ModelShape<T> = Modify<ExtShape, Shape>,
 >(
 	extendedModel: ModelManager<ExtT, ExtShape, ExtIdentifier>,
 	definition: ModelDefinition<T, Shape, Identifier>,
-)
-{
-	const { properties: extendedProperties, ...overridableDefinition } = extendedModel.definition;
-	const { properties: propertiesExtension, ...definitionExtension } = definition;
+) {
+	const {properties: extendedProperties, ...overridableDefinition} =
+		extendedModel.definition;
+	const {properties: propertiesExtension, ...definitionExtension} = definition;
 	return new ModelManager({
 		...overridableDefinition,
 		...definitionExtension,
@@ -553,15 +629,25 @@ export function extend<
 /**
  * A generic model manager for a provided model type, to use in circular dependencies.
  */
-export type GenericModelManager<T extends object> = ModelManager<T, ModelShape<T>, IdentifierDefinition<T, ModelShape<T>>>;
+export type GenericModelManager<T extends object> = ModelManager<
+	T,
+	ModelShape<T>,
+	IdentifierDefinition<T, ModelShape<T>>
+>;
 
 /**
  * Function to get a model manager lazily.
  */
-export type LazyModelManager<T extends object, Shape extends ModelShape<T>, Identifier extends IdentifierDefinition<T, Shape>>
-	= (() => ModelManager<T, Shape, Identifier>);
+export type LazyModelManager<
+	T extends object,
+	Shape extends ModelShape<T>,
+	Identifier extends IdentifierDefinition<T, Shape>,
+> = () => ModelManager<T, Shape, Identifier>;
 /**
  * A model manager definition that can be lazy.
  */
-export type DeclaredModelManager<T extends object, Shape extends ModelShape<T>, Identifier extends IdentifierDefinition<T, Shape>>
-	= ModelManager<T, Shape, Identifier>|LazyModelManager<T, Shape, Identifier>;
+export type DeclaredModelManager<
+	T extends object,
+	Shape extends ModelShape<T>,
+	Identifier extends IdentifierDefinition<T, Shape>,
+> = ModelManager<T, Shape, Identifier> | LazyModelManager<T, Shape, Identifier>;

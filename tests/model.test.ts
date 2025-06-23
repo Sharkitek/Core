@@ -4,8 +4,7 @@ import {circular, defineModel, s} from "../src/library";
 /**
  * Test class of an account.
  */
-class Account
-{
+class Account {
 	static model = s.defineModel({
 		Class: Account,
 		identifier: "id",
@@ -28,8 +27,7 @@ class Account
 /**
  * Test class of an article.
  */
-class Article
-{
+class Article {
 	static model = s.defineModel({
 		Class: Article,
 		identifier: "id",
@@ -39,7 +37,7 @@ class Article
 			authors: s.property.array(s.property.model(() => Account.model)),
 			text: s.property.string(),
 			evaluation: s.property.decimal(),
-			tags: s.property.array(s.property.object({ name: s.property.string() })),
+			tags: s.property.array(s.property.object({name: s.property.string()})),
 			comments: s.property.array(s.property.model(() => ArticleComment.model)),
 		},
 	});
@@ -49,15 +47,14 @@ class Article
 	authors: Account[];
 	text: string;
 	evaluation: number;
-	tags: { name: string }[];
+	tags: {name: string}[];
 	comments: ArticleComment[];
 }
 
 /**
  * Test class of a comment on an article.
  */
-class ArticleComment
-{
+class ArticleComment {
 	static model = s.defineModel({
 		Class: ArticleComment,
 		identifier: "id",
@@ -78,8 +75,7 @@ class ArticleComment
 /**
  * Get a test account instance.
  */
-function getTestAccount(): Account
-{
+function getTestAccount(): Account {
 	const account = new Account();
 	account.id = 52;
 	account.createdAt = new Date();
@@ -89,17 +85,13 @@ function getTestAccount(): Account
 	return account;
 }
 
-function getTestArticle(): Article
-{
+function getTestArticle(): Article {
 	const article = new Article();
 	article.id = 1;
 	article.title = "this is a test";
 	article.text = "this is a long test.";
 	article.evaluation = 25.23;
-	article.tags = [
-		{ name: "test" },
-		{ name: "foo" },
-	];
+	article.tags = [{name: "test"}, {name: "foo"}];
 	article.authors = [getTestAccount()];
 	article.comments = [];
 	return article;
@@ -107,8 +99,7 @@ function getTestArticle(): Article
 
 describe("model", () => {
 	it("defines a new model, extending an existing one", () => {
-		class ExtendedAccount extends Account
-		{
+		class ExtendedAccount extends Account {
 			static extendedModel = s.extend(Account.model, {
 				Class: ExtendedAccount,
 				properties: {
@@ -147,8 +138,7 @@ describe("model", () => {
 		expect(Article.model.model(article).getIdentifier()).toBe(1);
 	});
 	it("gets a model composite identifier value", () => {
-		class CompositeModel
-		{
+		class CompositeModel {
 			static model = s.defineModel({
 				Class: CompositeModel,
 				properties: {
@@ -157,7 +147,7 @@ describe("model", () => {
 					label: s.property.string(),
 				},
 				identifier: ["firstId", "secondId"],
-			})
+			});
 
 			firstId: number;
 			secondId: number;
@@ -165,11 +155,15 @@ describe("model", () => {
 		}
 
 		expect(
-			CompositeModel.model.model(Object.assign(new CompositeModel(), {
-				firstId: 5,
-				secondId: 6,
-				label: "test",
-			})).getIdentifier()
+			CompositeModel.model
+				.model(
+					Object.assign(new CompositeModel(), {
+						firstId: 5,
+						secondId: 6,
+						label: "test",
+					}),
+				)
+				.getIdentifier(),
 		).toStrictEqual([5, 6]);
 	});
 	it("checks model dirtiness when altered, then reset diff", () => {
@@ -177,7 +171,7 @@ describe("model", () => {
 		expect(Article.model.model(article).isDirty()).toBeFalsy();
 		article.title = "new title";
 		expect(Article.model.model(article).isDirty()).toBeTruthy();
-		Article.model.model(article).resetDiff()
+		Article.model.model(article).resetDiff();
 		expect(Article.model.model(article).isDirty()).toBeFalsy();
 	});
 
@@ -186,14 +180,36 @@ describe("model", () => {
 			id: 1,
 			title: "this is a test",
 			authors: [
-				Object.assign(new Account(), { id: 52, name: "John Doe", email: "test@test.test", createdAt: new Date("2022-08-07T08:47:01.000Z"), active: true, }),
-				Object.assign(new Account(), { id: 4, name: "Tester", email: "another@test.test", createdAt: new Date("2022-09-07T18:32:55.000Z"), active: false, }),
+				Object.assign(new Account(), {
+					id: 52,
+					name: "John Doe",
+					email: "test@test.test",
+					createdAt: new Date("2022-08-07T08:47:01.000Z"),
+					active: true,
+				}),
+				Object.assign(new Account(), {
+					id: 4,
+					name: "Tester",
+					email: "another@test.test",
+					createdAt: new Date("2022-09-07T18:32:55.000Z"),
+					active: false,
+				}),
 			],
 			text: "this is a long test.",
 			evaluation: 8.52,
-			tags: [ {name: "test"}, {name: "foo"} ],
+			tags: [{name: "test"}, {name: "foo"}],
 			comments: [
-				Object.assign(new ArticleComment(), { id: 542, author: Object.assign(new Account(), { id: 52, name: "John Doe", email: "test@test.test", createdAt: new Date("2022-08-07T08:47:01.000Z"), active: true, }), message: "comment content", }),
+				Object.assign(new ArticleComment(), {
+					id: 542,
+					author: Object.assign(new Account(), {
+						id: 52,
+						name: "John Doe",
+						email: "test@test.test",
+						createdAt: new Date("2022-08-07T08:47:01.000Z"),
+						active: true,
+					}),
+					message: "comment content",
+				}),
 			],
 		});
 
@@ -201,23 +217,49 @@ describe("model", () => {
 			id: 1,
 			title: "this is a test",
 			authors: [
-				{ id: 52, name: "John Doe", email: "test@test.test", createdAt: "2022-08-07T08:47:01.000Z", active: true, },
-				{ id: 4, name: "Tester", email: "another@test.test", createdAt: "2022-09-07T18:32:55.000Z", active: false, },
+				{
+					id: 52,
+					name: "John Doe",
+					email: "test@test.test",
+					createdAt: "2022-08-07T08:47:01.000Z",
+					active: true,
+				},
+				{
+					id: 4,
+					name: "Tester",
+					email: "another@test.test",
+					createdAt: "2022-09-07T18:32:55.000Z",
+					active: false,
+				},
 			],
 			text: "this is a long test.",
 			evaluation: "8.52",
-			tags: [ {name: "test"}, {name: "foo"} ],
+			tags: [{name: "test"}, {name: "foo"}],
 			comments: [
-				{ id: 542, author: { id: 52, name: "John Doe", email: "test@test.test", createdAt: "2022-08-07T08:47:01.000Z", active: true, }, message: "comment content", },
+				{
+					id: 542,
+					author: {
+						id: 52,
+						name: "John Doe",
+						email: "test@test.test",
+						createdAt: "2022-08-07T08:47:01.000Z",
+						active: true,
+					},
+					message: "comment content",
+				},
 			],
 		});
 
-		const deserializedArticleProperties = Article.model.model(deserializedArticle).getInstanceProperties();
+		const deserializedArticleProperties = Article.model
+			.model(deserializedArticle)
+			.getInstanceProperties();
 		delete deserializedArticleProperties.authors[0]._sharkitek;
 		delete deserializedArticleProperties.authors[1]._sharkitek;
 		delete deserializedArticleProperties.comments[0]._sharkitek;
 		delete (deserializedArticleProperties.comments[0].author as any)._sharkitek;
-		const expectedArticleProperties = Article.model.model(expectedArticle).getInstanceProperties();
+		const expectedArticleProperties = Article.model
+			.model(expectedArticle)
+			.getInstanceProperties();
 		delete expectedArticleProperties.authors[0]._sharkitek;
 		delete expectedArticleProperties.authors[1]._sharkitek;
 		delete expectedArticleProperties.comments[0]._sharkitek;
@@ -232,9 +274,15 @@ describe("model", () => {
 			title: "this is a test",
 			text: "this is a long test.",
 			evaluation: "25.23",
-			tags: [{ name: "test" }, { name: "foo" }],
+			tags: [{name: "test"}, {name: "foo"}],
 			authors: [
-				{ id: 52, createdAt: article.authors[0].createdAt.toISOString(), name: "John Doe", email: "john@doe.test", active: true }
+				{
+					id: 52,
+					createdAt: article.authors[0].createdAt.toISOString(),
+					name: "John Doe",
+					email: "john@doe.test",
+					active: true,
+				},
 			],
 			comments: [],
 		});
@@ -245,14 +293,36 @@ describe("model", () => {
 			id: 1,
 			title: "this is a test",
 			authors: [
-				{ id: 52, name: "John Doe", email: "test@test.test", createdAt: "2022-08-07T08:47:01.000Z", active: true, },
-				{ id: 4, name: "Tester", email: "another@test.test", createdAt: "2022-09-07T18:32:55.000Z", active: false, },
+				{
+					id: 52,
+					name: "John Doe",
+					email: "test@test.test",
+					createdAt: "2022-08-07T08:47:01.000Z",
+					active: true,
+				},
+				{
+					id: 4,
+					name: "Tester",
+					email: "another@test.test",
+					createdAt: "2022-09-07T18:32:55.000Z",
+					active: false,
+				},
 			],
 			text: "this is a long test.",
 			evaluation: "8.52",
-			tags: [ {name: "test"}, {name: "foo"} ],
+			tags: [{name: "test"}, {name: "foo"}],
 			comments: [
-				{ id: 542, author: { id: 52, name: "John Doe", email: "test@test.test", createdAt: "2022-08-07T08:47:01.000Z", active: true, }, message: "comment content", },
+				{
+					id: 542,
+					author: {
+						id: 52,
+						name: "John Doe",
+						email: "test@test.test",
+						createdAt: "2022-08-07T08:47:01.000Z",
+						active: true,
+					},
+					message: "comment content",
+				},
 			],
 		});
 
@@ -276,14 +346,36 @@ describe("model", () => {
 			id: 1,
 			title: "this is a test",
 			authors: [
-				{ id: 52, name: "John Doe", email: "test@test.test", createdAt: "2022-08-07T08:47:01.000Z", active: true, },
-				{ id: 4, name: "Tester", email: "another@test.test", createdAt: "2022-09-07T18:32:55.000Z", active: false, },
+				{
+					id: 52,
+					name: "John Doe",
+					email: "test@test.test",
+					createdAt: "2022-08-07T08:47:01.000Z",
+					active: true,
+				},
+				{
+					id: 4,
+					name: "Tester",
+					email: "another@test.test",
+					createdAt: "2022-09-07T18:32:55.000Z",
+					active: false,
+				},
 			],
 			text: "this is a long test.",
 			evaluation: "8.52",
-			tags: [ {name: "test"}, {name: "foo"} ],
+			tags: [{name: "test"}, {name: "foo"}],
 			comments: [
-				{ id: 542, author: { id: 52, name: "John Doe", email: "test@test.test", createdAt: "2022-08-07T08:47:01.000Z", active: true, }, message: "comment content", },
+				{
+					id: 542,
+					author: {
+						id: 52,
+						name: "John Doe",
+						email: "test@test.test",
+						createdAt: "2022-08-07T08:47:01.000Z",
+						active: true,
+					},
+					message: "comment content",
+				},
 			],
 		});
 
@@ -291,10 +383,7 @@ describe("model", () => {
 
 		expect(Article.model.model(deserializedArticle).patch()).toStrictEqual({
 			id: 1,
-			authors: [
-				{ id: 52, },
-				{ id: 4, active: true },
-			],
+			authors: [{id: 52}, {id: 4, active: true}],
 		});
 
 		deserializedArticle.comments[0].author.name = "Johnny";
@@ -314,8 +403,7 @@ describe("model", () => {
 	});
 
 	it("deserializes and patches with fields that are not properties", () => {
-		class TestModel
-		{
+		class TestModel {
 			static model = defineModel({
 				Class: TestModel,
 				properties: {
@@ -323,12 +411,12 @@ describe("model", () => {
 					label: s.property.string(),
 				},
 				identifier: "id",
-			})
+			});
 
 			id: number;
 			label: string;
 
-			notAProperty: { hello: string } = { hello: "world" };
+			notAProperty: {hello: string} = {hello: "world"};
 		}
 
 		const deserializedModel = TestModel.model.parse({
@@ -339,17 +427,29 @@ describe("model", () => {
 		expect(deserializedModel.label).toBe("testing");
 		expect(deserializedModel.notAProperty?.hello).toBe("world");
 
-		const clonedDeserializedModel = TestModel.model.model(deserializedModel).clone();
+		const clonedDeserializedModel = TestModel.model
+			.model(deserializedModel)
+			.clone();
 
 		deserializedModel.label = "new!";
-		expect(TestModel.model.model(deserializedModel).patch()).toStrictEqual({ id: 5, label: "new!" });
+		expect(TestModel.model.model(deserializedModel).patch()).toStrictEqual({
+			id: 5,
+			label: "new!",
+		});
 
 		deserializedModel.notAProperty.hello = "monster";
-		expect(TestModel.model.model(deserializedModel).patch()).toStrictEqual({ id: 5 });
+		expect(TestModel.model.model(deserializedModel).patch()).toStrictEqual({
+			id: 5,
+		});
 
-		expect(TestModel.model.model(deserializedModel).serialize()).toStrictEqual({ id: 5, label: "new!" });
+		expect(TestModel.model.model(deserializedModel).serialize()).toStrictEqual({
+			id: 5,
+			label: "new!",
+		});
 
-		expect(TestModel.model.model(clonedDeserializedModel).serialize()).toStrictEqual({ id: 5, label: "testing" });
+		expect(
+			TestModel.model.model(clonedDeserializedModel).serialize(),
+		).toStrictEqual({id: 5, label: "testing"});
 		expect(clonedDeserializedModel.notAProperty.hello).toEqual("world");
 	});
 
@@ -358,14 +458,36 @@ describe("model", () => {
 			id: 1,
 			title: "this is a test",
 			authors: [
-				{ id: 52, name: "John Doe", email: "test@test.test", createdAt: "2022-08-07T08:47:01.000Z", active: true, },
-				{ id: 4, name: "Tester", email: "another@test.test", createdAt: "2022-09-07T18:32:55.000Z", active: false, },
+				{
+					id: 52,
+					name: "John Doe",
+					email: "test@test.test",
+					createdAt: "2022-08-07T08:47:01.000Z",
+					active: true,
+				},
+				{
+					id: 4,
+					name: "Tester",
+					email: "another@test.test",
+					createdAt: "2022-09-07T18:32:55.000Z",
+					active: false,
+				},
 			],
 			text: "this is a long test.",
 			evaluation: "8.52",
-			tags: [ {name: "test"}, {name: "foo"} ],
+			tags: [{name: "test"}, {name: "foo"}],
 			comments: [
-				{ id: 542, author: { id: 52, name: "John Doe", email: "test@test.test", createdAt: "2022-08-07T08:47:01.000Z", active: true, }, message: "comment content", },
+				{
+					id: 542,
+					author: {
+						id: 52,
+						name: "John Doe",
+						email: "test@test.test",
+						createdAt: "2022-08-07T08:47:01.000Z",
+						active: true,
+					},
+					message: "comment content",
+				},
 			],
 		});
 
@@ -387,11 +509,16 @@ describe("model", () => {
 		const testArticle = Article.model.from({
 			title: "this is a test",
 			authors: [
-				Account.model.from({ name: "John Doe", email: "test@test.test", createdAt: new Date(), active: true }),
+				Account.model.from({
+					name: "John Doe",
+					email: "test@test.test",
+					createdAt: new Date(),
+					active: true,
+				}),
 			],
 			text: "this is a long text",
 			evaluation: 8.52,
-			tags: [{ name: "test" }, { name: "foo" }],
+			tags: [{name: "test"}, {name: "foo"}],
 
 			unknownField: true,
 			anotherOne: "test",
@@ -411,11 +538,17 @@ describe("model", () => {
 			id: 1,
 			title: "this is a test",
 			authors: [
-				Account.model.from({ id: 55, name: "John Doe", email: "test@test.test", createdAt: new Date(), active: true }),
+				Account.model.from({
+					id: 55,
+					name: "John Doe",
+					email: "test@test.test",
+					createdAt: new Date(),
+					active: true,
+				}),
 			],
 			text: "this is a long text",
 			evaluation: 8.52,
-			tags: [{ name: "test" }, { name: "foo" }],
+			tags: [{name: "test"}, {name: "foo"}],
 
 			unknownField: true,
 			anotherOne: "test",
@@ -427,23 +560,30 @@ describe("model", () => {
 			title: "new title",
 		});
 		expect(testArticle.title).toBe("new title");
-		expect(Article.model.model(testArticle).serializeDiff()).toStrictEqual({ id: 1 });
+		expect(Article.model.model(testArticle).serializeDiff()).toStrictEqual({
+			id: 1,
+		});
 
 		// Test originals update propagation.
 		Article.model.model(testArticle).applyPatch({
-			authors: [ { email: "john@test.test" } ]
+			authors: [{email: "john@test.test"}],
 		});
 		expect(testArticle.authors[0].email).toBe("john@test.test");
-		expect(Article.model.model(testArticle).serializeDiff()).toStrictEqual({ id: 1 });
+		expect(Article.model.model(testArticle).serializeDiff()).toStrictEqual({
+			id: 1,
+		});
 
 		// Test without originals update.
-		Article.model.model(testArticle).applyPatch({
-			authors: [ { name: "Johnny" } ]
-		}, false);
+		Article.model.model(testArticle).applyPatch(
+			{
+				authors: [{name: "Johnny"}],
+			},
+			false,
+		);
 		expect(testArticle.authors[0].name).toBe("Johnny");
 		expect(Article.model.model(testArticle).serializeDiff()).toStrictEqual({
 			id: 1,
-			authors: [ { id: 55, name: "Johnny" } ]
+			authors: [{id: 55, name: "Johnny"}],
 		});
 	});
 });

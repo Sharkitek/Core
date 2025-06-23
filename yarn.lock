@@ -664,6 +664,7 @@ __metadata:
   dependencies:
     "@types/node": "npm:^22.13.14"
     "@vitest/coverage-v8": "npm:^3.0.9"
+    prettier: "npm:^3.6.0"
     ts-node: "npm:^10.9.2"
     typescript: "npm:^5.8.2"
     vite: "npm:^6.2.3"
@@ -2376,6 +2377,15 @@ __metadata:
     picocolors: "npm:^1.1.1"
     source-map-js: "npm:^1.2.1"
   checksum: 10c0/b75510d7b28c3ab728c8733dd01538314a18c52af426f199a3c9177e63eb08602a3938bfb66b62dc01350b9aed62087eabbf229af97a1659eb8d3513cec823b3
+  languageName: node
+  linkType: hard
+
+"prettier@npm:^3.6.0":
+  version: 3.6.0
+  resolution: "prettier@npm:3.6.0"
+  bin:
+    prettier: bin/prettier.cjs
+  checksum: 10c0/636897c8084b71ef1f740a46199df0d8f6ed896aa497212cc8cc229d3026b9dca82fa92f61e55924c4708cea11e39a88478e2d93c4818741c55b7408a9ac6d91
   languageName: node
   linkType: hard
 

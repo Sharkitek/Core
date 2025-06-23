@@ -1,13 +1,21 @@
 import {Type} from "./type";
 import {define, Definition, UnknownDefinition} from "../property-definition";
-import {ModelProperties, ModelPropertiesValues, ModelProperty, ModelShape, SerializedModel} from "../model";
+import {
+	ModelProperties,
+	ModelPropertiesValues,
+	ModelProperty,
+	ModelShape,
+	SerializedModel,
+} from "../model";
 import {InvalidTypeValueError} from "../../errors";
 
 /**
  * Type of a custom object.
  */
-export class ObjectType<Shape extends ModelShape<T>, T extends object> extends Type<SerializedModel<T, Shape>, ModelPropertiesValues<T, Shape>>
-{
+export class ObjectType<
+	Shape extends ModelShape<T>,
+	T extends object,
+> extends Type<SerializedModel<T, Shape>, ModelPropertiesValues<T, Shape>> {
 	/**
 	 * Defined properties.
 	 */
@@ -17,8 +25,7 @@ export class ObjectType<Shape extends ModelShape<T>, T extends object> extends T
 	 * Initialize a new object type of a Sharkitek model property.
 	 * @param shape
 	 */
-	constructor(readonly shape: Shape)
-	{
+	constructor(readonly shape: Shape) {
 		super();
 		this.initProperties();
 	}
@@ -27,12 +34,11 @@ export class ObjectType<Shape extends ModelShape<T>, T extends object> extends T
 	 * Initialize properties iterator from the object shape.
 	 * @protected
 	 */
-	protected initProperties(): void
-	{
+	protected initProperties(): void {
 		// Build an array of model properties from the object shape.
 		this.properties = [];
-		for (const propertyName in this.shape)
-		{ // For each property, build a model property object.
+		for (const propertyName in this.shape) {
+			// For each property, build a model property object.
 			this.properties.push({
 				name: propertyName,
 				definition: this.shape[propertyName],
@@ -41,8 +47,9 @@ export class ObjectType<Shape extends ModelShape<T>, T extends object> extends T
 		}
 	}
 
-	deserialize(value: SerializedModel<T, Shape>|null|undefined): ModelPropertiesValues<T, Shape>|null|undefined
-	{
+	deserialize(
+		value: SerializedModel<T, Shape> | null | undefined,
+	): ModelPropertiesValues<T, Shape> | null | undefined {
 		if (value === undefined) return undefined;
 		if (value === null) return null;
 
@@ -52,16 +59,18 @@ export class ObjectType<Shape extends ModelShape<T>, T extends object> extends T
 		// Initialize an empty object.
 		const obj: Partial<ModelPropertiesValues<T, Shape>> = {};
 
-		for (const property of this.properties)
-		{ // For each defined property, deserialize its value according to its type.
-			(obj[property.name as keyof T] as any) = property.definition.type.deserialize(value?.[property.name]);
+		for (const property of this.properties) {
+			// For each defined property, deserialize its value according to its type.
+			(obj[property.name as keyof T] as any) =
+				property.definition.type.deserialize(value?.[property.name]);
 		}
 
 		return obj as ModelPropertiesValues<T, Shape>; // Returning serialized object.
 	}
 
-	serialize(value: ModelPropertiesValues<T, Shape>|null|undefined): SerializedModel<T, Shape>|null|undefined
-	{
+	serialize(
+		value: ModelPropertiesValues<T, Shape> | null | undefined,
+	): SerializedModel<T, Shape> | null | undefined {
 		if (value === undefined) return undefined;
 		if (value === null) return null;
 
@@ -71,8 +80,8 @@ export class ObjectType<Shape extends ModelShape<T>, T extends object> extends T
 		// Creating an empty serialized object.
 		const serializedObject: Partial<SerializedModel<T, Shape>> = {};
 
-		for (const property of this.properties)
-		{ // For each property, adding it to the serialized object.
+		for (const property of this.properties) {
+			// For each property, adding it to the serialized object.
 			serializedObject[property.name] = property.definition.type.serialize(
 				// keyof Shape is a subset of keyof T.
 				value?.[property.name as keyof T],
@@ -82,8 +91,9 @@ export class ObjectType<Shape extends ModelShape<T>, T extends object> extends T
 		return serializedObject as SerializedModel<T, Shape>; // Returning the serialized object.
 	}
 
-	serializeDiff(value: ModelPropertiesValues<T, Shape>|null|undefined): Partial<SerializedModel<T, Shape>>|null|undefined
-	{
+	serializeDiff(
+		value: ModelPropertiesValues<T, Shape> | null | undefined,
+	): Partial<SerializedModel<T, Shape>> | null | undefined {
 		if (value === undefined) return undefined;
 		if (value === null) return null;
 
@@ -93,8 +103,8 @@ export class ObjectType<Shape extends ModelShape<T>, T extends object> extends T
 		// Creating an empty serialized object.
 		const serializedObject: Partial<SerializedModel<T, Shape>> = {};
 
-		for (const property of this.properties)
-		{ // For each property, adding it to the serialized object.
+		for (const property of this.properties) {
+			// For each property, adding it to the serialized object.
 			serializedObject[property.name] = property.definition.type.serializeDiff(
 				// keyof Shape is a subset of keyof T.
 				value?.[property.name as keyof T],
@@ -104,8 +114,7 @@ export class ObjectType<Shape extends ModelShape<T>, T extends object> extends T
 		return serializedObject as SerializedModel<T, Shape>; // Returning the serialized object.
 	}
 
-	resetDiff(value: ModelPropertiesValues<T, Shape>|null|undefined)
-	{
+	resetDiff(value: ModelPropertiesValues<T, Shape> | null | undefined) {
 		if (value === undefined) return;
 		if (value === null) return;
 
@@ -113,53 +122,84 @@ export class ObjectType<Shape extends ModelShape<T>, T extends object> extends T
 			throw new InvalidTypeValueError(this, value, "value must be an object");
 
 		// For each property, reset its diff.
+		// keyof Shape is a subset of keyof T.
 		for (const property of this.properties)
-			// keyof Shape is a subset of keyof T.
 			property.definition.type.resetDiff(value?.[property.name as keyof T]);
 	}
 
-	hasChanged(originalValue: ModelPropertiesValues<T, Shape>|null|undefined, currentValue: ModelPropertiesValues<T, Shape>|null|undefined): boolean
-	{
+	hasChanged(
+		originalValue: ModelPropertiesValues<T, Shape> | null | undefined,
+		currentValue: ModelPropertiesValues<T, Shape> | null | undefined,
+	): boolean {
 		if (originalValue === undefined) return currentValue !== undefined;
 		if (originalValue === null) return currentValue !== null;
 		if (currentValue === undefined) return true; // Original value is not undefined.
 		if (currentValue === null) return true; // Original value is not null.
 
 		if (typeof originalValue !== "object" || Array.isArray(originalValue))
-			throw new InvalidTypeValueError(this, originalValue, "value must be an object");
+			throw new InvalidTypeValueError(
+				this,
+				originalValue,
+				"value must be an object",
+			);
 		if (typeof currentValue !== "object" || Array.isArray(currentValue))
-			throw new InvalidTypeValueError(this, currentValue, "value must be an object");
+			throw new InvalidTypeValueError(
+				this,
+				currentValue,
+				"value must be an object",
+			);
 
 		// If any property has changed, the value has changed.
 		for (const property of this.properties)
-			if (property.definition.type.hasChanged(originalValue?.[property.name as keyof T], currentValue?.[property.name as keyof T]))
+			if (
+				property.definition.type.hasChanged(
+					originalValue?.[property.name as keyof T],
+					currentValue?.[property.name as keyof T],
+				)
+			)
 				return true;
 
 		return false; // No change detected.
 	}
 
-	serializedHasChanged(originalValue: SerializedModel<T, Shape>|null|undefined, currentValue: SerializedModel<T, Shape>|null|undefined): boolean
-	{
+	serializedHasChanged(
+		originalValue: SerializedModel<T, Shape> | null | undefined,
+		currentValue: SerializedModel<T, Shape> | null | undefined,
+	): boolean {
 		if (originalValue === undefined) return currentValue !== undefined;
 		if (originalValue === null) return currentValue !== null;
 		if (currentValue === undefined) return true; // Original value is not undefined.
 		if (currentValue === null) return true; // Original value is not null.
 
 		if (typeof originalValue !== "object" || Array.isArray(originalValue))
-			throw new InvalidTypeValueError(this, originalValue, "value must be an object");
+			throw new InvalidTypeValueError(
+				this,
+				originalValue,
+				"value must be an object",
+			);
 		if (typeof currentValue !== "object" || Array.isArray(currentValue))
-			throw new InvalidTypeValueError(this, currentValue, "value must be an object");
+			throw new InvalidTypeValueError(
+				this,
+				currentValue,
+				"value must be an object",
+			);
 
 		// If any property has changed, the value has changed.
 		for (const property of this.properties)
-			if (property.definition.type.serializedHasChanged(originalValue?.[property.name], currentValue?.[property.name]))
+			if (
+				property.definition.type.serializedHasChanged(
+					originalValue?.[property.name],
+					currentValue?.[property.name],
+				)
+			)
 				return true;
 
 		return false; // No change detected.
 	}
 
-	clone<Type extends ModelPropertiesValues<T, Shape>>(value: Type|null|undefined): Type
-	{
+	clone<Type extends ModelPropertiesValues<T, Shape>>(
+		value: Type | null | undefined,
+	): Type {
 		// Handle NULL / undefined object.
 		if (!value) return super.clone(value);
 
@@ -169,29 +209,47 @@ export class ObjectType<Shape extends ModelShape<T>, T extends object> extends T
 		// Initialize an empty object.
 		const cloned: Partial<ModelPropertiesValues<T, Shape>> = {};
 
-		for (const property of this.properties)
-		{ // For each defined property, clone it.
-			cloned[property.name as keyof T] = property.definition.type.clone(value?.[property.name]);
+		for (const property of this.properties) {
+			// For each defined property, clone it.
+			cloned[property.name as keyof T] = property.definition.type.clone(
+				value?.[property.name],
+			);
 		}
 
 		return cloned as Type; // Returning cloned object.
 	}
 
-	applyPatch<Type extends ModelPropertiesValues<T, Shape>>(currentValue: Type|null|undefined, patchValue: SerializedModel<T, Shape>|null|undefined, updateOriginals: boolean): Type|null|undefined
-	{
+	applyPatch<Type extends ModelPropertiesValues<T, Shape>>(
+		currentValue: Type | null | undefined,
+		patchValue: SerializedModel<T, Shape> | null | undefined,
+		updateOriginals: boolean,
+	): Type | null | undefined {
 		if (patchValue === undefined) return undefined;
 		if (patchValue === null) return null;
 
 		if (typeof patchValue !== "object" || Array.isArray(patchValue))
-			throw new InvalidTypeValueError(this, patchValue, "value must be an object");
+			throw new InvalidTypeValueError(
+				this,
+				patchValue,
+				"value must be an object",
+			);
 
-		const patchedValue: Partial<Type> = typeof currentValue === "object" && currentValue !== null ? currentValue : {};
+		const patchedValue: Partial<Type> =
+			typeof currentValue === "object" && currentValue !== null
+				? currentValue
+				: {};
 
-		for (const key in patchValue)
-		{ // Apply the patch to each property of the patch value.
+		for (const key in patchValue) {
+			// Apply the patch to each property of the patch value.
 			const propertyDef = this.shape[key];
 			if (propertyDef)
-				patchedValue[key as keyof Type] = (propertyDef as UnknownDefinition).type.applyPatch(currentValue?.[key as keyof Type], patchValue[key], updateOriginals);
+				patchedValue[key as keyof Type] = (
+					propertyDef as UnknownDefinition
+				).type.applyPatch(
+					currentValue?.[key as keyof Type],
+					patchValue[key],
+					updateOriginals,
+				);
 		}
 
 		return patchedValue as Type;
@@ -202,7 +260,8 @@ export class ObjectType<Shape extends ModelShape<T>, T extends object> extends T
  * New object property definition.
  * @param shape Shape of the object.
  */
-export function object<Shape extends ModelShape<T>, T extends object>(shape: Shape): Definition<SerializedModel<T, Shape>, ModelPropertiesValues<T, Shape>>
-{
+export function object<Shape extends ModelShape<T>, T extends object>(
+	shape: Shape,
+): Definition<SerializedModel<T, Shape>, ModelPropertiesValues<T, Shape>> {
 	return define(new ObjectType(shape));
 }
