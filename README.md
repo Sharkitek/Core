@@ -45,23 +45,23 @@ Then, you can use the defined methods like `serialize`, `parse`, `patch` or `ser
 
 ```typescript
 class Example {
-	static model = defineModel({
-		Class: Example,
-		properties: {
-			id: s.property.numeric(),
-			name: s.property.string(),
-		},
-		identifier: "id",
-	});
-
 	id: number;
 	name: string;
 }
+
+const ExampleModel = defineModel({
+	Class: Example,
+	properties: {
+		id: s.property.numeric(),
+		name: s.property.string(),
+	},
+	identifier: "id",
+});
 ```
 
 ## Quick start
 
-**Note**: by convention, we define our models in a `model` static variable in the model's class. It is a good way to keep your model declaration near the actual class, and its usage will be more natural.
+**Note**: we usually define our models in a `{ModelName}Model` variable next to the model's class.
 
 ### Model definition
 
@@ -70,24 +70,27 @@ class Example {
  * A person.
  */
 class Person {
-	static model = defineModel({
-		Class: Person,
-		properties: {
-			id: s.property.numeric(),
-			name: s.property.string(),
-			email: s.property.string(),
-			createdAt: s.property.date(),
-			active: s.property.boolean(),
-		},
-		identifier: "id",
-	});
-
 	id: number;
 	name: string;
 	email: string;
 	createdAt: Date;
 	active: boolean = true;
 }
+
+/**
+ * A person model manager.
+ */
+const PersonModel = defineModel({
+	Class: Person,
+	properties: {
+		id: s.property.numeric(),
+		name: s.property.string(),
+		email: s.property.string(),
+		createdAt: s.property.date(),
+		active: s.property.boolean(),
+	},
+	identifier: "id",
+});
 ```
 
 ```typescript
@@ -95,23 +98,6 @@ class Person {
  * An article.
  */
 class Article {
-	static model = defineModel({
-		Class: Article,
-		properties: {
-			id: s.property.numeric(),
-			title: s.property.string(),
-			authors: s.property.array(s.property.model(Person)),
-			text: s.property.string(),
-			evaluation: s.property.decimal(),
-			tags: s.property.array(
-				s.property.object({
-					name: s.property.string(),
-				}),
-			),
-		},
-		identifier: "id",
-	});
-
 	id: number;
 	title: string;
 	authors: Person[] = [];
@@ -121,6 +107,26 @@ class Article {
 		name: string;
 	}[];
 }
+
+/**
+ * An article model manager.
+ */
+const ArticleModel = defineModel({
+	Class: Article,
+	properties: {
+		id: s.property.numeric(),
+		title: s.property.string(),
+		authors: s.property.array(s.property.model(PersonModel)),
+		text: s.property.string(),
+		evaluation: s.property.decimal(),
+		tags: s.property.array(
+			s.property.object({
+				name: s.property.string(),
+			}),
+		),
+	},
+	identifier: "id",
+});
 ```
 
 ```typescript
@@ -128,18 +134,21 @@ class Article {
  * A model with composite keys.
  */
 class CompositeKeys {
-	static model = defineModel({
-		Class: CompositeKeys,
-		properties: {
-			id1: s.property.numeric(),
-			id2: s.property.string(),
-		},
-		identifier: ["id1", "id2"],
-	});
-
 	id1: number;
 	id2: string;
 }
+
+/**
+ * A composite keys model manager.
+ */
+const CompositeKeysModel = defineModel({
+	Class: CompositeKeys,
+	properties: {
+		id1: s.property.numeric(),
+		id2: s.property.string(),
+	},
+	identifier: ["id1", "id2"],
+});
 ```
 
 ### Model functions
@@ -153,14 +162,14 @@ instance.createdAt = new Date();
 instance.name = "John Doe";
 instance.email = "john@doe.test";
 instance.active = true;
-const serialized = Person.model.model(instance).serialize();
+const serialized = PersonModel.model(instance).serialize();
 console.log(serialized); // { id: 1, createdAt: "YYYY-MM-DDTHH:mm:ss.sssZ", name: "John Doe", email: "john@doe.test", active: true }
 ```
 
 #### Deserialization
 
 ```typescript
-const instance = Person.model.parse({
+const instance = PersonModel.parse({
 	id: 1,
 	createdAt: "2011-10-05T14:48:00.000Z",
 	name: "John Doe",
@@ -174,7 +183,7 @@ console.log(instance.createdAt instanceof Date); // true
 #### Patch
 
 ```typescript
-const instance = Person.model.parse({
+const instance = PersonModel.parse({
 	id: 1,
 	createdAt: "2011-10-05T14:48:00.000Z",
 	name: "John Doe",
@@ -185,9 +194,9 @@ const instance = Person.model.parse({
 instance.name = "Johnny";
 
 // Patch serialized only changed properties and the identifier.
-console.log(Person.model.model(instance).patch()); // { id: 1, name: "Johnny" }
+console.log(PersonModel.model(instance).patch()); // { id: 1, name: "Johnny" }
 // If you run it one more time, already patched properties will not be included again.
-console.log(Person.model.model(instance).patch()); // { id: 1 }
+console.log(PersonModel.model(instance).patch()); // { id: 1 }
 ```
 
 #### Identifier
@@ -196,7 +205,7 @@ console.log(Person.model.model(instance).patch()); // { id: 1 }
 const instance = new CompositeKeys();
 instance.id1 = 5;
 instance.id2 = "foo";
-const instanceIdentifier = CompositeKeys.model.model(instance).getIdentifier();
+const instanceIdentifier = CompositeKeysModel.model(instance).getIdentifier();
 console.log(instanceIdentifier); // [5, "foo"]
 ```
 
@@ -222,15 +231,15 @@ When you are defining a property of a Sharkitek model, you must provide its type
 
 ```typescript
 class Example {
-	static model = defineModel({
-		Class: Example,
-		properties: {
-			foo: s.property.define(new StringType()),
-		},
-	});
-
 	foo: string;
 }
+
+const ExampleModel = defineModel({
+	Class: Example,
+	properties: {
+		foo: s.property.define(new StringType()),
+	},
+});
 ```
 
 To ease the use of these classes and reduce read complexity, properties of each type are easily definable with a function for each type.
@@ -249,15 +258,15 @@ Type implementers should provide a corresponding function for each defined type.
 
 ```typescript
 class Example {
-	static model = defineModel({
-		Class: Example,
-		properties: {
-			foo: s.property.string(),
-		},
-	});
-
 	foo: string;
 }
+
+const ExampleModel = defineModel({
+	Class: Example,
+	properties: {
+		foo: s.property.string(),
+	},
+});
 ```
 
 ### Models

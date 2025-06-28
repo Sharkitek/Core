@@ -5,18 +5,6 @@ import {circular, defineModel, s} from "../src/library";
  * Test class of an account.
  */
 class Account {
-	static model = s.defineModel({
-		Class: Account,
-		identifier: "id",
-		properties: {
-			id: s.property.numeric(),
-			createdAt: s.property.date(),
-			name: s.property.string(),
-			email: s.property.string(),
-			active: s.property.boolean(),
-		},
-	});
-
 	id: number;
 	createdAt: Date;
 	name: string;
@@ -24,24 +12,22 @@ class Account {
 	active: boolean;
 }
 
+const AccountModel = s.defineModel({
+	Class: Account,
+	identifier: "id",
+	properties: {
+		id: s.property.numeric(),
+		createdAt: s.property.date(),
+		name: s.property.string(),
+		email: s.property.string(),
+		active: s.property.boolean(),
+	},
+});
+
 /**
  * Test class of an article.
  */
 class Article {
-	static model = s.defineModel({
-		Class: Article,
-		identifier: "id",
-		properties: {
-			id: s.property.numeric(),
-			title: s.property.string(),
-			authors: s.property.array(s.property.model(() => Account.model)),
-			text: s.property.string(),
-			evaluation: s.property.decimal(),
-			tags: s.property.array(s.property.object({name: s.property.string()})),
-			comments: s.property.array(s.property.model(() => ArticleComment.model)),
-		},
-	});
-
 	id: number;
 	title: string;
 	authors: Account[];
@@ -51,26 +37,40 @@ class Article {
 	comments: ArticleComment[];
 }
 
+const ArticleModel = s.defineModel({
+	Class: Article,
+	identifier: "id",
+	properties: {
+		id: s.property.numeric(),
+		title: s.property.string(),
+		authors: s.property.array(s.property.model(() => AccountModel)),
+		text: s.property.string(),
+		evaluation: s.property.decimal(),
+		tags: s.property.array(s.property.object({name: s.property.string()})),
+		comments: s.property.array(s.property.model(() => ArticleCommentModel)),
+	},
+});
+
 /**
  * Test class of a comment on an article.
  */
 class ArticleComment {
-	static model = s.defineModel({
-		Class: ArticleComment,
-		identifier: "id",
-		properties: {
-			id: s.property.numeric(),
-			article: s.property.model(circular<Article>(() => Article.model)),
-			author: s.property.model(() => Account.model),
-			message: s.property.string(),
-		},
-	});
-
 	id: number;
 	article?: Article;
 	author: Account;
 	message: string;
 }
+
+const ArticleCommentModel = s.defineModel({
+	Class: ArticleComment,
+	identifier: "id",
+	properties: {
+		id: s.property.numeric(),
+		article: s.property.model(circular<Article>(() => ArticleModel)),
+		author: s.property.model(() => AccountModel),
+		message: s.property.string(),
+	},
+});
 
 /**
  * Get a test account instance.
@@ -100,17 +100,17 @@ function getTestArticle(): Article {
 describe("model", () => {
 	it("defines a new model, extending an existing one", () => {
 		class ExtendedAccount extends Account {
-			static extendedModel = s.extend(Account.model, {
-				Class: ExtendedAccount,
-				properties: {
-					extendedProperty: s.property.string(),
-				},
-			});
-
 			extendedProperty: string;
 		}
 
-		expect(ExtendedAccount.extendedModel.definition).toEqual({
+		const ExtendedAccountModel = s.extend(AccountModel, {
+			Class: ExtendedAccount,
+			properties: {
+				extendedProperty: s.property.string(),
+			},
+		});
+
+		expect(ExtendedAccountModel.definition).toEqual({
 			Class: ExtendedAccount,
 			identifier: "id",
 			properties: {
@@ -125,17 +125,17 @@ describe("model", () => {
 	});
 	it("initializes a new model", () => {
 		const article = getTestArticle();
-		const newModel = Article.model.model(article);
+		const newModel = ArticleModel.model(article);
 		expect(newModel.instance).toBe(article);
 	});
 	it("gets a model state from its instance", () => {
 		const article = getTestArticle();
-		expect(Article.model.model(article).isNew()).toBeTruthy();
-		expect(Article.model.model(article).isDirty()).toBeFalsy();
+		expect(ArticleModel.model(article).isNew()).toBeTruthy();
+		expect(ArticleModel.model(article).isDirty()).toBeFalsy();
 	});
 	it("gets a model identifier value", () => {
 		const article = getTestArticle();
-		expect(Article.model.model(article).getIdentifier()).toBe(1);
+		expect(ArticleModel.model(article).getIdentifier()).toBe(1);
 	});
 	it("gets a model composite identifier value", () => {
 		class CompositeModel {
@@ -168,11 +168,11 @@ describe("model", () => {
 	});
 	it("checks model dirtiness when altered, then reset diff", () => {
 		const article = getTestArticle();
-		expect(Article.model.model(article).isDirty()).toBeFalsy();
+		expect(ArticleModel.model(article).isDirty()).toBeFalsy();
 		article.title = "new title";
-		expect(Article.model.model(article).isDirty()).toBeTruthy();
-		Article.model.model(article).resetDiff();
-		expect(Article.model.model(article).isDirty()).toBeFalsy();
+		expect(ArticleModel.model(article).isDirty()).toBeTruthy();
+		ArticleModel.model(article).resetDiff();
+		expect(ArticleModel.model(article).isDirty()).toBeFalsy();
 	});
 
 	it("deserializes a model from a serialized form", () => {
@@ -213,7 +213,7 @@ describe("model", () => {
 			],
 		});
 
-		const deserializedArticle = Article.model.parse({
+		const deserializedArticle = ArticleModel.parse({
 			id: 1,
 			title: "this is a test",
 			authors: [
@@ -250,16 +250,14 @@ describe("model", () => {
 			],
 		});
 
-		const deserializedArticleProperties = Article.model
-			.model(deserializedArticle)
-			.getInstanceProperties();
+		const deserializedArticleProperties =
+			ArticleModel.model(deserializedArticle).getInstanceProperties();
 		delete deserializedArticleProperties.authors[0]._sharkitek;
 		delete deserializedArticleProperties.authors[1]._sharkitek;
 		delete deserializedArticleProperties.comments[0]._sharkitek;
 		delete (deserializedArticleProperties.comments[0].author as any)._sharkitek;
-		const expectedArticleProperties = Article.model
-			.model(expectedArticle)
-			.getInstanceProperties();
+		const expectedArticleProperties =
+			ArticleModel.model(expectedArticle).getInstanceProperties();
 		delete expectedArticleProperties.authors[0]._sharkitek;
 		delete expectedArticleProperties.authors[1]._sharkitek;
 		delete expectedArticleProperties.comments[0]._sharkitek;
@@ -269,7 +267,7 @@ describe("model", () => {
 
 	it("serializes an initialized model", () => {
 		const article = getTestArticle();
-		expect(Article.model.model(article).serialize()).toEqual({
+		expect(ArticleModel.model(article).serialize()).toEqual({
 			id: 1,
 			title: "this is a test",
 			text: "this is a long test.",
@@ -289,7 +287,7 @@ describe("model", () => {
 	});
 
 	it("deserializes, changes and patches", () => {
-		const deserializedArticle = Article.model.parse({
+		const deserializedArticle = ArticleModel.parse({
 			id: 1,
 			title: "this is a test",
 			authors: [
@@ -328,21 +326,21 @@ describe("model", () => {
 
 		deserializedArticle.text = "A new text for a new life!";
 
-		expect(Article.model.model(deserializedArticle).patch()).toStrictEqual({
+		expect(ArticleModel.model(deserializedArticle).patch()).toStrictEqual({
 			id: 1,
 			text: "A new text for a new life!",
 		});
 
 		deserializedArticle.evaluation = 5.24;
 
-		expect(Article.model.model(deserializedArticle).patch()).toStrictEqual({
+		expect(ArticleModel.model(deserializedArticle).patch()).toStrictEqual({
 			id: 1,
 			evaluation: "5.24",
 		});
 	});
 
 	it("patches with modified submodels", () => {
-		const deserializedArticle = Article.model.parse({
+		const deserializedArticle = ArticleModel.parse({
 			id: 1,
 			title: "this is a test",
 			authors: [
@@ -381,14 +379,14 @@ describe("model", () => {
 
 		deserializedArticle.authors[1].active = true;
 
-		expect(Article.model.model(deserializedArticle).patch()).toStrictEqual({
+		expect(ArticleModel.model(deserializedArticle).patch()).toStrictEqual({
 			id: 1,
 			authors: [{id: 52}, {id: 4, active: true}],
 		});
 
 		deserializedArticle.comments[0].author.name = "Johnny";
 
-		expect(Article.model.model(deserializedArticle).patch()).toStrictEqual({
+		expect(ArticleModel.model(deserializedArticle).patch()).toStrictEqual({
 			id: 1,
 			comments: [
 				{
@@ -454,7 +452,7 @@ describe("model", () => {
 	});
 
 	it("assigns properties, ignoring fields which are not properties", () => {
-		const deserializedArticle = Article.model.parse({
+		const deserializedArticle = ArticleModel.parse({
 			id: 1,
 			title: "this is a test",
 			authors: [
@@ -492,13 +490,13 @@ describe("model", () => {
 		});
 
 		// Assign title and text, html is silently ignored.
-		Article.model.model(deserializedArticle).assign({
+		ArticleModel.model(deserializedArticle).assign({
 			title: "something else",
 			text: "fully new text! yes!",
 			html: "<p>fully new text! yes!</p>",
 		});
 		expect((deserializedArticle as any)?.html).toBeUndefined();
-		expect(Article.model.model(deserializedArticle).patch()).toStrictEqual({
+		expect(ArticleModel.model(deserializedArticle).patch()).toStrictEqual({
 			id: 1,
 			title: "something else",
 			text: "fully new text! yes!",
@@ -506,10 +504,10 @@ describe("model", () => {
 	});
 
 	it("initializes a model from properties values", () => {
-		const testArticle = Article.model.from({
+		const testArticle = ArticleModel.from({
 			title: "this is a test",
 			authors: [
-				Account.model.from({
+				AccountModel.from({
 					name: "John Doe",
 					email: "test@test.test",
 					createdAt: new Date(),
@@ -534,11 +532,11 @@ describe("model", () => {
 	});
 
 	it("applies patches to an existing model", () => {
-		const testArticle = Article.model.from({
+		const testArticle = ArticleModel.from({
 			id: 1,
 			title: "this is a test",
 			authors: [
-				Account.model.from({
+				AccountModel.from({
 					id: 55,
 					name: "John Doe",
 					email: "test@test.test",
@@ -553,35 +551,35 @@ describe("model", () => {
 			unknownField: true,
 			anotherOne: "test",
 		});
-		Article.model.model(testArticle).resetDiff();
+		ArticleModel.model(testArticle).resetDiff();
 
 		// Test simple patch.
-		Article.model.model(testArticle).applyPatch({
+		ArticleModel.model(testArticle).applyPatch({
 			title: "new title",
 		});
 		expect(testArticle.title).toBe("new title");
-		expect(Article.model.model(testArticle).serializeDiff()).toStrictEqual({
+		expect(ArticleModel.model(testArticle).serializeDiff()).toStrictEqual({
 			id: 1,
 		});
 
 		// Test originals update propagation.
-		Article.model.model(testArticle).applyPatch({
+		ArticleModel.model(testArticle).applyPatch({
 			authors: [{email: "john@test.test"}],
 		});
 		expect(testArticle.authors[0].email).toBe("john@test.test");
-		expect(Article.model.model(testArticle).serializeDiff()).toStrictEqual({
+		expect(ArticleModel.model(testArticle).serializeDiff()).toStrictEqual({
 			id: 1,
 		});
 
 		// Test without originals update.
-		Article.model.model(testArticle).applyPatch(
+		ArticleModel.model(testArticle).applyPatch(
 			{
 				authors: [{name: "Johnny"}],
 			},
 			false,
 		);
 		expect(testArticle.authors[0].name).toBe("Johnny");
-		expect(Article.model.model(testArticle).serializeDiff()).toStrictEqual({
+		expect(ArticleModel.model(testArticle).serializeDiff()).toStrictEqual({
 			id: 1,
 			authors: [{id: 55, name: "Johnny"}],
 		});
