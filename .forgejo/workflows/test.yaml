@@ -12,4 +12,5 @@ jobs:
         with:
           cache: "yarn"
       - run: yarn install
+      - run: yarn lint
       - run: yarn coverage
