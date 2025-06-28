@@ -19,7 +19,7 @@
 </p>
 
 <p align="center">
-	<img alt="Tests status" src="https://code.zeptotech.net/Sharkitek/Core/badges/workflows/test.yaml/badge.svg" />
+	<img alt="Tests status" src="https://code.zeptotech.net/Sharkitek/Core/badges/workflows/test.yaml/badge.svg?branch=main" />
 	<a href="https://bundlephobia.com/package/@sharkitek/core" target="_blank">
 		<img alt="Bundle size" src="https://badgen.net/bundlephobia/minzip/@sharkitek/core" />
 	</a>
