@@ -32,7 +32,10 @@ export abstract class Type<SerializedType, ModelType> {
 	 * Reset the difference between the original value and the current one.
 	 * @param value Value for which reset diff data.
 	 */
-	resetDiff(value: ModelType | null | undefined): void {
+	resetDiff(
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		value: ModelType | null | undefined,
+	): void {
 		// By default, nothing to do.
 	}
 
@@ -77,6 +80,7 @@ export abstract class Type<SerializedType, ModelType> {
 	applyPatch<T extends ModelType>(
 		currentValue: T | null | undefined,
 		patchValue: SerializedType | null | undefined,
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		updateOriginals: boolean,
 	): T | null | undefined {
 		return this.deserialize(patchValue) as T;

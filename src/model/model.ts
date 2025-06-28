@@ -29,6 +29,7 @@ export type SerializedModel<T extends object, Shape extends ModelShape<T>> = {
  * This is an experimental serialized model type declaration.
  * @deprecated
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 type ExperimentalSerializedModel<
 	T extends object,
 	Shape extends ModelShape<T>,

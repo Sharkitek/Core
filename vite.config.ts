@@ -1,9 +1,9 @@
-import {ConfigEnv, defineConfig, UserConfig} from "vite";
+import {defineConfig, UserConfig} from "vite";
 import dts from "vite-plugin-dts";
 
 // https://vitejs.dev/config/
 
-export default defineConfig(({mode}: ConfigEnv): UserConfig => {
+export default defineConfig((): UserConfig => {
 	return {
 		build: {
 			outDir: "lib",
