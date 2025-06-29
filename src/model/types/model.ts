@@ -214,6 +214,10 @@ export function model<
 	return define(new ModelType(definedModel));
 }
 
+/**
+ * Utility function to fix circular dependencies issues.
+ * @param definedModel A function returning the model to use.
+ */
 export function circular<T extends object>(
 	definedModel: () => any,
 ): () => GenericModelManager<T> {
