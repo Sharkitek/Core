@@ -1,8 +1,8 @@
-import * as property from "./properties";
-export {property};
+export * as property from "./properties";
 
 export * from "./model";
 export {Definition} from "./property-definition";
+export {newModel, ModelBuilder} from "./builder";
 
 export {ArrayType} from "./types/array";
 export {BooleanType} from "./types/boolean";
