@@ -585,6 +585,19 @@ export class ModelManager<
 }
 
 /**
+ * A model manager extension is a mixin, building a new model manager class with extended capabilities.
+ * @see https://www.typescriptlang.org/docs/handbook/mixins.html
+ */
+export type ModelManagerExtension<
+	Extension extends object,
+	T extends object,
+	Shape extends ModelShape<T>,
+	Identifier extends IdentifierDefinition<T, Shape>,
+> = (
+	modelManager: ModelManager<T, Shape, Identifier>,
+) => ModelManager<T, Shape, Identifier> & Extension;
+
+/**
  * Define a new model.
  * @param definition The model definition object.
  */
